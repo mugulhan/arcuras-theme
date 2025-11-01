@@ -4,7 +4,7 @@ Theme URI: https://arcuras.com
 Author: Mudos Digital
 Author URI: https://mudosdigital.com/
 Description: A modern, high-performance WordPress theme with multilingual support (Turkish/English), user-based language preferences, and optimized inline SVG icons. Performance Score: 85/100 (Lighthouse).
-Version: 2.12.5
+Version: 2.13.0
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -18,6 +18,14 @@ This theme, like WordPress, is licensed under the GPL.
 Use it to make something cool, have fun, and share what you've learned.
 
 Changelog:
+v2.13.0 - Updated Translation SEO Format:
+- Changed translation SEO titles to be more search-friendly and descriptive
+- Updated all 33 languages with new format (e.g., "Şarkı Sözleri, Türkçe Çevirisi ve Açıklamaları")
+- Removed pipe character from translation titles for better SEO
+- Updated meta descriptions for all translation languages
+- Enhanced block editor SEO preview with side-by-side Original/Translation views
+- Database-driven SEO settings now use comprehensive format
+
 v2.12.5 - Added Mongolian Language:
 - Added Mongolian (mn) as default language with full SEO support
 - Languages now total 33 (32 previous + 1 new)
