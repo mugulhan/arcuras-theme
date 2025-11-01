@@ -33,7 +33,8 @@ export const AVAILABLE_LANGUAGES = [
 	{ value: 'ba', label: 'Bashkir (Башҡорт теле)' },
 	{ value: 'az', label: 'Azerbaijani (Azərbaycan)' },
 	{ value: 'kk', label: 'Kazakh (Қазақша)' },
-	{ value: 'alt', label: 'Altai (Алтай тил)' }
+	{ value: 'alt', label: 'Altai (Алтай тил)' },
+	{ value: 'mn', label: 'Mongolian (Монгол)' }
 ];
 
 /**
@@ -231,6 +232,12 @@ export const SEO_DATA = {
 		meta_suffix: 'Кожоҥ сӧстӧрин окуп, туужы тилдерде которгон сӧстӧрди табар, ла туружыларды ӧргӧнӧр',
 		translation_suffix: 'Алтай тилге которгон сӧс',
 		translation_meta_suffix: 'Баштапкы текст ла туружылар ла бӧлӧ алтай тилге которгон кожоҥ сӧстӧр'
+	},
+	mn: {
+		original_suffix: 'Дууны үг, Орчуулга ба Тайлбар',
+		meta_suffix: 'Дууны үг уншиж, олон хэл дээрх орчуулга олж, дэлгэрэнгүй тайлбар судлаарай',
+		translation_suffix: 'Монгол орчуулга',
+		translation_meta_suffix: 'Эх бичвэр ба тайлбартай хамт монгол хэл рүү орчуулсан дууны үг'
 	}
 };
 

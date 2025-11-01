@@ -361,6 +361,13 @@ function arcuras_get_language_term_data() {
             'flag' => '🇷🇺',
             'iso_code' => 'alt'
         ),
+        'mongolian' => array(
+            'name' => 'Mongolian',
+            'slug' => 'mongolian',
+            'description' => 'Mongolian language lyrics and translations',
+            'flag' => '🇲🇳',
+            'iso_code' => 'mn'
+        ),
     );
 
     // Get custom languages from database
