@@ -1,6 +1,6 @@
 {
 	"name": "arcuras-lyrics-translations-block",
-	"version": "2.12.1",
+	"version": "2.13.8",
 	"description": "Lyrics & Translations Gutenberg Block for Arcuras",
 	"scripts": {
 		"build": "wp-scripts build",

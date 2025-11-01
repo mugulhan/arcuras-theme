@@ -355,173 +355,535 @@ if ( ! function_exists( 'gufte_get_lyrics_languages' ) ) {
 
             <!-- English Tab Content -->
             <div id="content-original-english" class="tab-content">
-                <?php if (!empty($english_post_ids)) :
-                    arcuras_lyrics_slider(
-                        array(
-                            'post_type' => 'lyrics',
-                            'post__in' => $english_post_ids,
-                            'posts_per_page' => 10,
-                            'post_status' => 'publish',
-                            'orderby' => 'post__in'
-                        ),
-                        array(
-                            'slider_id' => 'english-slider',
-                            'show_navigation' => true,
-                            'show_pagination' => false,
-                            'card_type' => 'compact'
-                        )
-                    );
-                endif; ?>
+                <div class="custom-slider-container" style="position: relative; width: 100%; overflow: hidden;">
+                    <div class="custom-slider-wrapper" style="display: flex; align-items: flex-start; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; gap: 0;">
+                        <?php if (!empty($english_post_ids)) :
+                            $english_query = new WP_Query(array(
+                                'post_type' => 'lyrics',
+                                'post__in' => $english_post_ids,
+                                'posts_per_page' => 10,
+                                'post_status' => 'publish',
+                                'orderby' => 'post__in'
+                            ));
+                            while ($english_query->have_posts()) : $english_query->the_post(); ?>
+                                <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                                    <div style="height: 100%;">
+                                        <?php arcuras_lyrics_card(get_the_ID(), array('card_type' => 'compact')); ?>
+                                    </div>
+                                </div>
+                            <?php endwhile;
+                            wp_reset_postdata();
+                        endif; ?>
+
+                        <!-- Discover Card -->
+                        <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                            <?php
+                            $english_term = get_term_by('slug', 'english', 'original_language');
+                            $english_url = $english_term ? get_term_link($english_term) : home_url('/lyrics/original/english/');
+                            ?>
+                            <a href="<?php echo esc_url($english_url); ?>" style="display: block; height: 100%; text-decoration: none;">
+                                <div style="height: 100%; min-height: 300px; background: linear-gradient(to bottom right, #6366f1, #4338ca); border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); overflow: hidden; border: 1px solid #4f46e5; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; text-align: center; color: white;">
+                                    <div style="font-size: 4rem; margin-bottom: 1rem;">
+                                        <?php gufte_icon("music-note", "w-16 h-16 mx-auto"); ?>
+                                    </div>
+                                    <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; color: white;"><?php esc_html_e('Discover English Songs', 'gufte'); ?></h3>
+                                    <p style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem; color: white;"><?php esc_html_e('Explore all lyrics in original English language', 'gufte'); ?></p>
+                                    <span style="display: inline-flex; align-items: center; font-size: 0.875rem; font-weight: 600; color: white;">
+                                        <?php esc_html_e('View All', 'gufte'); ?>
+                                        <span style="margin-left: 0.5rem;">→</span>
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <button type="button" class="custom-slider-prev" onclick="scrollSlider('english-slider-custom', -1)" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-left", "w-6 h-6"); ?>
+                    </button>
+                    <button type="button" class="custom-slider-next" onclick="scrollSlider('english-slider-custom', 1)" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-right", "w-6 h-6"); ?>
+                    </button>
+                </div>
+                <script>
+                (function() {
+                    const container = document.querySelector('#content-original-english .custom-slider-container');
+                    if (!container) return;
+                    container.id = 'english-slider-custom';
+                    const wrapper = container.querySelector('.custom-slider-wrapper');
+                    const prevBtn = container.querySelector('.custom-slider-prev');
+                    const nextBtn = container.querySelector('.custom-slider-next');
+
+                    function updateButtons() {
+                        if (!wrapper) return;
+                        const isAtStart = wrapper.scrollLeft <= 10;
+                        const isAtEnd = wrapper.scrollLeft >= wrapper.scrollWidth - wrapper.clientWidth - 10;
+                        if (prevBtn) prevBtn.style.display = isAtStart ? 'none' : 'flex';
+                        if (nextBtn) nextBtn.style.display = isAtEnd ? 'none' : 'flex';
+                    }
+
+                    if (wrapper) {
+                        wrapper.addEventListener('scroll', updateButtons);
+                        updateButtons();
+                    }
+                })();
+                </script>
             </div>
 
             <!-- Turkish Tab Content -->
             <div id="content-original-turkish" class="tab-content hidden">
-                <?php if (!empty($turkish_post_ids)) :
-                    arcuras_lyrics_slider(
-                        array(
-                            'post_type' => 'lyrics',
-                            'post__in' => $turkish_post_ids,
-                            'posts_per_page' => 10,
-                            'post_status' => 'publish',
-                            'orderby' => 'post__in'
-                        ),
-                        array(
-                            'slider_id' => 'turkish-slider',
-                            'show_navigation' => true,
-                            'show_pagination' => false,
-                            'card_type' => 'compact'
-                        )
-                    );
-                else : ?>
-                    <div class="bg-gray-50 rounded-lg p-8 text-center">
-                        <p class="text-gray-600"><?php esc_html_e('No Turkish lyrics found yet.', 'gufte'); ?></p>
+                <div class="custom-slider-container" style="position: relative; width: 100%; overflow: hidden;">
+                    <div class="custom-slider-wrapper" style="display: flex; align-items: flex-start; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; gap: 0;">
+                        <?php if (!empty($turkish_post_ids)) :
+                            $turkish_query = new WP_Query(array(
+                                'post_type' => 'lyrics',
+                                'post__in' => $turkish_post_ids,
+                                'posts_per_page' => 10,
+                                'post_status' => 'publish',
+                                'orderby' => 'post__in'
+                            ));
+                            while ($turkish_query->have_posts()) : $turkish_query->the_post(); ?>
+                                <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                                    <div style="height: 100%;">
+                                        <?php arcuras_lyrics_card(get_the_ID(), array('card_type' => 'compact')); ?>
+                                    </div>
+                                </div>
+                            <?php endwhile;
+                            wp_reset_postdata();
+                        endif; ?>
+
+                        <!-- Discover Card -->
+                        <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                            <?php
+                            $turkish_term = get_term_by('slug', 'turkish', 'original_language');
+                            $turkish_url = $turkish_term ? get_term_link($turkish_term) : home_url('/lyrics/original/turkish/');
+                            ?>
+                            <a href="<?php echo esc_url($turkish_url); ?>" style="display: block; height: 100%; text-decoration: none;">
+                                <div style="height: 100%; min-height: 300px; background: linear-gradient(to bottom right, #ef4444, #b91c1c); border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); overflow: hidden; border: 1px solid #dc2626; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; text-align: center; color: white;">
+                                    <div style="font-size: 4rem; margin-bottom: 1rem;">
+                                        <?php gufte_icon("music-note", "w-16 h-16 mx-auto"); ?>
+                                    </div>
+                                    <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; color: white;"><?php esc_html_e('Discover Turkish Songs', 'gufte'); ?></h3>
+                                    <p style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem; color: white;"><?php esc_html_e('Explore all lyrics in original Turkish language', 'gufte'); ?></p>
+                                    <span style="display: inline-flex; align-items: center; font-size: 0.875rem; font-weight: 600; color: white;">
+                                        <?php esc_html_e('View All', 'gufte'); ?>
+                                        <span style="margin-left: 0.5rem;">→</span>
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
                     </div>
-                <?php endif; ?>
+
+                    <button type="button" class="custom-slider-prev" onclick="scrollSlider('turkish-slider-custom', -1)" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-left", "w-6 h-6"); ?>
+                    </button>
+                    <button type="button" class="custom-slider-next" onclick="scrollSlider('turkish-slider-custom', 1)" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-right", "w-6 h-6"); ?>
+                    </button>
+                </div>
+                <script>
+                (function() {
+                    const container = document.querySelector('#content-original-turkish .custom-slider-container');
+                    if (!container) return;
+                    container.id = 'turkish-slider-custom';
+                    const wrapper = container.querySelector('.custom-slider-wrapper');
+                    const prevBtn = container.querySelector('.custom-slider-prev');
+                    const nextBtn = container.querySelector('.custom-slider-next');
+
+                    function updateButtons() {
+                        if (!wrapper) return;
+                        const isAtStart = wrapper.scrollLeft <= 10;
+                        const isAtEnd = wrapper.scrollLeft >= wrapper.scrollWidth - wrapper.clientWidth - 10;
+                        if (prevBtn) prevBtn.style.display = isAtStart ? 'none' : 'flex';
+                        if (nextBtn) nextBtn.style.display = isAtEnd ? 'none' : 'flex';
+                    }
+
+                    if (wrapper) {
+                        wrapper.addEventListener('scroll', updateButtons);
+                        updateButtons();
+                    }
+                })();
+                </script>
             </div>
 
             <!-- Spanish Tab Content -->
             <div id="content-original-spanish" class="tab-content hidden">
-                <?php if (!empty($spanish_post_ids)) :
-                    arcuras_lyrics_slider(
-                        array(
-                            'post_type' => 'lyrics',
-                            'post__in' => $spanish_post_ids,
-                            'posts_per_page' => 10,
-                            'post_status' => 'publish',
-                            'orderby' => 'post__in'
-                        ),
-                        array(
-                            'slider_id' => 'spanish-slider',
-                            'show_navigation' => true,
-                            'show_pagination' => false,
-                            'card_type' => 'compact'
-                        )
-                    );
-                else : ?>
-                    <div class="bg-gray-50 rounded-lg p-8 text-center">
-                        <p class="text-gray-600"><?php esc_html_e('No Spanish lyrics found yet.', 'gufte'); ?></p>
+                <div class="custom-slider-container" style="position: relative; width: 100%; overflow: hidden;">
+                    <div class="custom-slider-wrapper" style="display: flex; align-items: flex-start; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; gap: 0;">
+                        <?php if (!empty($spanish_post_ids)) :
+                            $spanish_query = new WP_Query(array(
+                                'post_type' => 'lyrics',
+                                'post__in' => $spanish_post_ids,
+                                'posts_per_page' => 10,
+                                'post_status' => 'publish',
+                                'orderby' => 'post__in'
+                            ));
+                            while ($spanish_query->have_posts()) : $spanish_query->the_post(); ?>
+                                <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                                    <div style="height: 100%;">
+                                        <?php arcuras_lyrics_card(get_the_ID(), array('card_type' => 'compact')); ?>
+                                    </div>
+                                </div>
+                            <?php endwhile;
+                            wp_reset_postdata();
+                        endif; ?>
+
+                        <!-- Discover Card -->
+                        <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                            <?php
+                            $spanish_term = get_term_by('slug', 'spanish', 'original_language');
+                            $spanish_url = $spanish_term ? get_term_link($spanish_term) : home_url('/lyrics/original/spanish/');
+                            ?>
+                            <a href="<?php echo esc_url($spanish_url); ?>" style="display: block; height: 100%; text-decoration: none;">
+                                <div style="height: 100%; min-height: 300px; background: linear-gradient(to bottom right, #eab308, #ea580c); border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); overflow: hidden; border: 1px solid #ea580c; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; text-align: center; color: white;">
+                                    <div style="font-size: 4rem; margin-bottom: 1rem;">
+                                        <?php gufte_icon("music-note", "w-16 h-16 mx-auto"); ?>
+                                    </div>
+                                    <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; color: white;"><?php esc_html_e('Discover Spanish Songs', 'gufte'); ?></h3>
+                                    <p style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem; color: white;"><?php esc_html_e('Explore all lyrics in original Spanish language', 'gufte'); ?></p>
+                                    <span style="display: inline-flex; align-items: center; font-size: 0.875rem; font-weight: 600; color: white;">
+                                        <?php esc_html_e('View All', 'gufte'); ?>
+                                        <span style="margin-left: 0.5rem;">→</span>
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
                     </div>
-                <?php endif; ?>
+
+                    <button type="button" class="custom-slider-prev" onclick="scrollSlider('spanish-slider-custom', -1)" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-left", "w-6 h-6"); ?>
+                    </button>
+                    <button type="button" class="custom-slider-next" onclick="scrollSlider('spanish-slider-custom', 1)" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-right", "w-6 h-6"); ?>
+                    </button>
+                </div>
+                <script>
+                (function() {
+                    const container = document.querySelector('#content-original-spanish .custom-slider-container');
+                    if (!container) return;
+                    container.id = 'spanish-slider-custom';
+                    const wrapper = container.querySelector('.custom-slider-wrapper');
+                    const prevBtn = container.querySelector('.custom-slider-prev');
+                    const nextBtn = container.querySelector('.custom-slider-next');
+
+                    function updateButtons() {
+                        if (!wrapper) return;
+                        const isAtStart = wrapper.scrollLeft <= 10;
+                        const isAtEnd = wrapper.scrollLeft >= wrapper.scrollWidth - wrapper.clientWidth - 10;
+                        if (prevBtn) prevBtn.style.display = isAtStart ? 'none' : 'flex';
+                        if (nextBtn) nextBtn.style.display = isAtEnd ? 'none' : 'flex';
+                    }
+
+                    if (wrapper) {
+                        wrapper.addEventListener('scroll', updateButtons);
+                        updateButtons();
+                    }
+                })();
+                </script>
             </div>
 
             <!-- French Tab Content -->
             <div id="content-original-french" class="tab-content hidden">
-                <?php if (!empty($french_post_ids)) :
-                    arcuras_lyrics_slider(
-                        array(
-                            'post_type' => 'lyrics',
-                            'post__in' => $french_post_ids,
-                            'posts_per_page' => 10,
-                            'post_status' => 'publish',
-                            'orderby' => 'post__in'
-                        ),
-                        array(
-                            'slider_id' => 'french-slider',
-                            'show_navigation' => true,
-                            'show_pagination' => false,
-                            'card_type' => 'compact'
-                        )
-                    );
-                else : ?>
-                    <div class="bg-gray-50 rounded-lg p-8 text-center">
-                        <p class="text-gray-600"><?php esc_html_e('No French lyrics found yet.', 'gufte'); ?></p>
+                <div class="custom-slider-container" style="position: relative; width: 100%; overflow: hidden;">
+                    <div class="custom-slider-wrapper" style="display: flex; align-items: flex-start; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; gap: 0;">
+                        <?php if (!empty($french_post_ids)) :
+                            $french_query = new WP_Query(array(
+                                'post_type' => 'lyrics',
+                                'post__in' => $french_post_ids,
+                                'posts_per_page' => 10,
+                                'post_status' => 'publish',
+                                'orderby' => 'post__in'
+                            ));
+                            while ($french_query->have_posts()) : $french_query->the_post(); ?>
+                                <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                                    <div style="height: 100%;">
+                                        <?php arcuras_lyrics_card(get_the_ID(), array('card_type' => 'compact')); ?>
+                                    </div>
+                                </div>
+                            <?php endwhile;
+                            wp_reset_postdata();
+                        endif; ?>
+
+                        <!-- Discover Card -->
+                        <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                            <?php
+                            $french_term = get_term_by('slug', 'french', 'original_language');
+                            $french_url = $french_term ? get_term_link($french_term) : home_url('/lyrics/original/french/');
+                            ?>
+                            <a href="<?php echo esc_url($french_url); ?>" style="display: block; height: 100%; text-decoration: none;">
+                                <div style="height: 100%; min-height: 300px; background: linear-gradient(to bottom right, #3b82f6, #4f46e5); border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); overflow: hidden; border: 1px solid #4f46e5; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; text-align: center; color: white;">
+                                    <div style="font-size: 4rem; margin-bottom: 1rem;">
+                                        <?php gufte_icon("music-note", "w-16 h-16 mx-auto"); ?>
+                                    </div>
+                                    <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; color: white;"><?php esc_html_e('Discover French Songs', 'gufte'); ?></h3>
+                                    <p style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem; color: white;"><?php esc_html_e('Explore all lyrics in original French language', 'gufte'); ?></p>
+                                    <span style="display: inline-flex; align-items: center; font-size: 0.875rem; font-weight: 600; color: white;">
+                                        <?php esc_html_e('View All', 'gufte'); ?>
+                                        <span style="margin-left: 0.5rem;">→</span>
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
                     </div>
-                <?php endif; ?>
+
+                    <button type="button" class="custom-slider-prev" onclick="scrollSlider('french-slider-custom', -1)" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-left", "w-6 h-6"); ?>
+                    </button>
+                    <button type="button" class="custom-slider-next" onclick="scrollSlider('french-slider-custom', 1)" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-right", "w-6 h-6"); ?>
+                    </button>
+                </div>
+                <script>
+                (function() {
+                    const container = document.querySelector('#content-original-french .custom-slider-container');
+                    if (!container) return;
+                    container.id = 'french-slider-custom';
+                    const wrapper = container.querySelector('.custom-slider-wrapper');
+                    const prevBtn = container.querySelector('.custom-slider-prev');
+                    const nextBtn = container.querySelector('.custom-slider-next');
+
+                    function updateButtons() {
+                        if (!wrapper) return;
+                        const isAtStart = wrapper.scrollLeft <= 10;
+                        const isAtEnd = wrapper.scrollLeft >= wrapper.scrollWidth - wrapper.clientWidth - 10;
+                        if (prevBtn) prevBtn.style.display = isAtStart ? 'none' : 'flex';
+                        if (nextBtn) nextBtn.style.display = isAtEnd ? 'none' : 'flex';
+                    }
+
+                    if (wrapper) {
+                        wrapper.addEventListener('scroll', updateButtons);
+                        updateButtons();
+                    }
+                })();
+                </script>
             </div>
 
             <!-- Italian Tab Content -->
             <div id="content-original-italian" class="tab-content hidden">
-                <?php if (!empty($italian_post_ids)) :
-                    arcuras_lyrics_slider(
-                        array(
-                            'post_type' => 'lyrics',
-                            'post__in' => $italian_post_ids,
-                            'posts_per_page' => 10,
-                            'post_status' => 'publish',
-                            'orderby' => 'post__in'
-                        ),
-                        array(
-                            'slider_id' => 'italian-slider',
-                            'show_navigation' => true,
-                            'show_pagination' => false,
-                            'card_type' => 'compact'
-                        )
-                    );
-                else : ?>
-                    <div class="bg-gray-50 rounded-lg p-8 text-center">
-                        <p class="text-gray-600"><?php esc_html_e('No Italian lyrics found yet.', 'gufte'); ?></p>
+                <div class="custom-slider-container" style="position: relative; width: 100%; overflow: hidden;">
+                    <div class="custom-slider-wrapper" style="display: flex; align-items: flex-start; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; gap: 0;">
+                        <?php if (!empty($italian_post_ids)) :
+                            $italian_query = new WP_Query(array(
+                                'post_type' => 'lyrics',
+                                'post__in' => $italian_post_ids,
+                                'posts_per_page' => 10,
+                                'post_status' => 'publish',
+                                'orderby' => 'post__in'
+                            ));
+                            while ($italian_query->have_posts()) : $italian_query->the_post(); ?>
+                                <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                                    <div style="height: 100%;">
+                                        <?php arcuras_lyrics_card(get_the_ID(), array('card_type' => 'compact')); ?>
+                                    </div>
+                                </div>
+                            <?php endwhile;
+                            wp_reset_postdata();
+                        endif; ?>
+
+                        <!-- Discover Card -->
+                        <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                            <?php
+                            $italian_term = get_term_by('slug', 'italian', 'original_language');
+                            $italian_url = $italian_term ? get_term_link($italian_term) : home_url('/lyrics/original/italian/');
+                            ?>
+                            <a href="<?php echo esc_url($italian_url); ?>" style="display: block; height: 100%; text-decoration: none;">
+                                <div style="height: 100%; min-height: 300px; background: linear-gradient(to bottom right, #10b981, #047857); border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); overflow: hidden; border: 1px solid #059669; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; text-align: center; color: white;">
+                                    <div style="font-size: 4rem; margin-bottom: 1rem;">
+                                        <?php gufte_icon("music-note", "w-16 h-16 mx-auto"); ?>
+                                    </div>
+                                    <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; color: white;"><?php esc_html_e('Discover Italian Songs', 'gufte'); ?></h3>
+                                    <p style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem; color: white;"><?php esc_html_e('Explore all lyrics in original Italian language', 'gufte'); ?></p>
+                                    <span style="display: inline-flex; align-items: center; font-size: 0.875rem; font-weight: 600; color: white;">
+                                        <?php esc_html_e('View All', 'gufte'); ?>
+                                        <span style="margin-left: 0.5rem;">→</span>
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
                     </div>
-                <?php endif; ?>
+
+                    <button type="button" class="custom-slider-prev" onclick="scrollSlider('italian-slider-custom', -1)" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-left", "w-6 h-6"); ?>
+                    </button>
+                    <button type="button" class="custom-slider-next" onclick="scrollSlider('italian-slider-custom', 1)" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-right", "w-6 h-6"); ?>
+                    </button>
+                </div>
+                <script>
+                (function() {
+                    const container = document.querySelector('#content-original-italian .custom-slider-container');
+                    if (!container) return;
+                    container.id = 'italian-slider-custom';
+                    const wrapper = container.querySelector('.custom-slider-wrapper');
+                    const prevBtn = container.querySelector('.custom-slider-prev');
+                    const nextBtn = container.querySelector('.custom-slider-next');
+
+                    function updateButtons() {
+                        if (!wrapper) return;
+                        const isAtStart = wrapper.scrollLeft <= 10;
+                        const isAtEnd = wrapper.scrollLeft >= wrapper.scrollWidth - wrapper.clientWidth - 10;
+                        if (prevBtn) prevBtn.style.display = isAtStart ? 'none' : 'flex';
+                        if (nextBtn) nextBtn.style.display = isAtEnd ? 'none' : 'flex';
+                    }
+
+                    if (wrapper) {
+                        wrapper.addEventListener('scroll', updateButtons);
+                        updateButtons();
+                    }
+                })();
+                </script>
             </div>
 
             <!-- Korean Tab Content -->
             <div id="content-original-korean" class="tab-content hidden">
-                <?php if (!empty($korean_post_ids)) :
-                    arcuras_lyrics_slider(
-                        array(
-                            'post_type' => 'lyrics',
-                            'post__in' => $korean_post_ids,
-                            'posts_per_page' => 10,
-                            'post_status' => 'publish',
-                            'orderby' => 'post__in'
-                        ),
-                        array(
-                            'slider_id' => 'korean-slider',
-                            'show_navigation' => true,
-                            'show_pagination' => false,
-                            'card_type' => 'compact'
-                        )
-                    );
-                else : ?>
-                    <div class="bg-gray-50 rounded-lg p-8 text-center">
-                        <p class="text-gray-600"><?php esc_html_e('No Korean lyrics found yet.', 'gufte'); ?></p>
+                <div class="custom-slider-container" style="position: relative; width: 100%; overflow: hidden;">
+                    <div class="custom-slider-wrapper" style="display: flex; align-items: flex-start; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; gap: 0;">
+                        <?php if (!empty($korean_post_ids)) :
+                            $korean_query = new WP_Query(array(
+                                'post_type' => 'lyrics',
+                                'post__in' => $korean_post_ids,
+                                'posts_per_page' => 10,
+                                'post_status' => 'publish',
+                                'orderby' => 'post__in'
+                            ));
+                            while ($korean_query->have_posts()) : $korean_query->the_post(); ?>
+                                <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                                    <div style="height: 100%;">
+                                        <?php arcuras_lyrics_card(get_the_ID(), array('card_type' => 'compact')); ?>
+                                    </div>
+                                </div>
+                            <?php endwhile;
+                            wp_reset_postdata();
+                        endif; ?>
+
+                        <!-- Discover Card -->
+                        <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                            <?php
+                            $korean_term = get_term_by('slug', 'korean', 'original_language');
+                            $korean_url = $korean_term ? get_term_link($korean_term) : home_url('/lyrics/original/korean/');
+                            ?>
+                            <a href="<?php echo esc_url($korean_url); ?>" style="display: block; height: 100%; text-decoration: none;">
+                                <div style="height: 100%; min-height: 300px; background: linear-gradient(to bottom right, #ec4899, #e11d48); border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); overflow: hidden; border: 1px solid #e11d48; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; text-align: center; color: white;">
+                                    <div style="font-size: 4rem; margin-bottom: 1rem;">
+                                        <?php gufte_icon("music-note", "w-16 h-16 mx-auto"); ?>
+                                    </div>
+                                    <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; color: white;"><?php esc_html_e('Discover Korean Songs', 'gufte'); ?></h3>
+                                    <p style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem; color: white;"><?php esc_html_e('Explore all lyrics in original Korean language', 'gufte'); ?></p>
+                                    <span style="display: inline-flex; align-items: center; font-size: 0.875rem; font-weight: 600; color: white;">
+                                        <?php esc_html_e('View All', 'gufte'); ?>
+                                        <span style="margin-left: 0.5rem;">→</span>
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
                     </div>
-                <?php endif; ?>
+
+                    <button type="button" class="custom-slider-prev" onclick="scrollSlider('korean-slider-custom', -1)" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-left", "w-6 h-6"); ?>
+                    </button>
+                    <button type="button" class="custom-slider-next" onclick="scrollSlider('korean-slider-custom', 1)" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-right", "w-6 h-6"); ?>
+                    </button>
+                </div>
+                <script>
+                (function() {
+                    const container = document.querySelector('#content-original-korean .custom-slider-container');
+                    if (!container) return;
+                    container.id = 'korean-slider-custom';
+                    const wrapper = container.querySelector('.custom-slider-wrapper');
+                    const prevBtn = container.querySelector('.custom-slider-prev');
+                    const nextBtn = container.querySelector('.custom-slider-next');
+
+                    function updateButtons() {
+                        if (!wrapper) return;
+                        const isAtStart = wrapper.scrollLeft <= 10;
+                        const isAtEnd = wrapper.scrollLeft >= wrapper.scrollWidth - wrapper.clientWidth - 10;
+                        if (prevBtn) prevBtn.style.display = isAtStart ? 'none' : 'flex';
+                        if (nextBtn) nextBtn.style.display = isAtEnd ? 'none' : 'flex';
+                    }
+
+                    if (wrapper) {
+                        wrapper.addEventListener('scroll', updateButtons);
+                        updateButtons();
+                    }
+                })();
+                </script>
             </div>
 
             <!-- Japanese Tab Content -->
             <div id="content-original-japanese" class="tab-content hidden">
-                <?php if (!empty($japanese_post_ids)) :
-                    arcuras_lyrics_slider(
-                        array(
-                            'post_type' => 'lyrics',
-                            'post__in' => $japanese_post_ids,
-                            'posts_per_page' => 10,
-                            'post_status' => 'publish',
-                            'orderby' => 'post__in'
-                        ),
-                        array(
-                            'slider_id' => 'japanese-slider',
-                            'show_navigation' => true,
-                            'show_pagination' => false,
-                            'card_type' => 'compact'
-                        )
-                    );
-                else : ?>
-                    <div class="bg-gray-50 rounded-lg p-8 text-center">
-                        <p class="text-gray-600"><?php esc_html_e('No Japanese lyrics found yet.', 'gufte'); ?></p>
+                <div class="custom-slider-container" style="position: relative; width: 100%; overflow: hidden;">
+                    <div class="custom-slider-wrapper" style="display: flex; align-items: flex-start; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; gap: 0;">
+                        <?php if (!empty($japanese_post_ids)) :
+                            $japanese_query = new WP_Query(array(
+                                'post_type' => 'lyrics',
+                                'post__in' => $japanese_post_ids,
+                                'posts_per_page' => 10,
+                                'post_status' => 'publish',
+                                'orderby' => 'post__in'
+                            ));
+                            while ($japanese_query->have_posts()) : $japanese_query->the_post(); ?>
+                                <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                                    <div style="height: 100%;">
+                                        <?php arcuras_lyrics_card(get_the_ID(), array('card_type' => 'compact')); ?>
+                                    </div>
+                                </div>
+                            <?php endwhile;
+                            wp_reset_postdata();
+                        endif; ?>
+
+                        <!-- Discover Card -->
+                        <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+                            <?php
+                            $japanese_term = get_term_by('slug', 'japanese', 'original_language');
+                            $japanese_url = $japanese_term ? get_term_link($japanese_term) : home_url('/lyrics/original/japanese/');
+                            ?>
+                            <a href="<?php echo esc_url($japanese_url); ?>" style="display: block; height: 100%; text-decoration: none;">
+                                <div style="height: 100%; min-height: 300px; background: linear-gradient(to bottom right, #a855f7, #7c3aed); border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); overflow: hidden; border: 1px solid #7c3aed; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; text-align: center; color: white;">
+                                    <div style="font-size: 4rem; margin-bottom: 1rem;">
+                                        <?php gufte_icon("music-note", "w-16 h-16 mx-auto"); ?>
+                                    </div>
+                                    <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; color: white;"><?php esc_html_e('Discover Japanese Songs', 'gufte'); ?></h3>
+                                    <p style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 1rem; color: white;"><?php esc_html_e('Explore all lyrics in original Japanese language', 'gufte'); ?></p>
+                                    <span style="display: inline-flex; align-items: center; font-size: 0.875rem; font-weight: 600; color: white;">
+                                        <?php esc_html_e('View All', 'gufte'); ?>
+                                        <span style="margin-left: 0.5rem;">→</span>
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
                     </div>
-                <?php endif; ?>
+
+                    <button type="button" class="custom-slider-prev" onclick="scrollSlider('japanese-slider-custom', -1)" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-left", "w-6 h-6"); ?>
+                    </button>
+                    <button type="button" class="custom-slider-next" onclick="scrollSlider('japanese-slider-custom', 1)" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 48px; height: 48px; border-radius: 50%; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">
+                        <?php gufte_icon("chevron-right", "w-6 h-6"); ?>
+                    </button>
+                </div>
+                <script>
+                (function() {
+                    const container = document.querySelector('#content-original-japanese .custom-slider-container');
+                    if (!container) return;
+                    container.id = 'japanese-slider-custom';
+                    const wrapper = container.querySelector('.custom-slider-wrapper');
+                    const prevBtn = container.querySelector('.custom-slider-prev');
+                    const nextBtn = container.querySelector('.custom-slider-next');
+
+                    function updateButtons() {
+                        if (!wrapper) return;
+                        const isAtStart = wrapper.scrollLeft <= 10;
+                        const isAtEnd = wrapper.scrollLeft >= wrapper.scrollWidth - wrapper.clientWidth - 10;
+                        if (prevBtn) prevBtn.style.display = isAtStart ? 'none' : 'flex';
+                        if (nextBtn) nextBtn.style.display = isAtEnd ? 'none' : 'flex';
+                    }
+
+                    if (wrapper) {
+                        wrapper.addEventListener('scroll', updateButtons);
+                        updateButtons();
+                    }
+                })();
+                </script>
             </div>
         </div>
 
@@ -598,6 +960,22 @@ if ( ! function_exists( 'gufte_get_lyrics_languages' ) ) {
             if (activeContent) {
                 activeContent.classList.remove('hidden');
             }
+        }
+
+        function scrollSlider(sliderId, direction) {
+            const container = document.getElementById(sliderId);
+            if (!container) return;
+
+            const wrapper = container.querySelector('.custom-slider-wrapper');
+            if (!wrapper) return;
+
+            const slideWidth = wrapper.querySelector('.custom-slide')?.offsetWidth || 0;
+            const scrollAmount = slideWidth * 2 * direction;
+
+            wrapper.scrollBy({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
         }
         </script>
 

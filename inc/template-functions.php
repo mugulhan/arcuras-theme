@@ -171,7 +171,7 @@ if (!function_exists('arcuras_lyrics_slider')) {
         <!-- Slider Wrapper -->
         <div class="custom-slider-wrapper" style="display: flex; align-items: flex-start; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; gap: 0;">
             <?php while ($lyrics_query->have_posts()) : $lyrics_query->the_post(); ?>
-            <div class="custom-slide" style="flex: 0 0 40%; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
+            <div class="custom-slide" style="flex: 0 0 auto; width: 280px; scroll-snap-align: start; padding: 8px; box-sizing: border-box; align-self: flex-start;">
                 <div style="height: 100%;">
                     <?php arcuras_lyrics_card(get_the_ID(), array('card_type' => $slider_args['card_type'])); ?>
                 </div>
@@ -191,23 +191,27 @@ if (!function_exists('arcuras_lyrics_slider')) {
     </div>
 
     <script>
-    // Custom slider scroll function
-    function scrollSlider(sliderId, direction) {
-        const container = document.getElementById(sliderId);
+    (function() {
+        const container = document.getElementById('<?php echo esc_js($slider_id); ?>');
         if (!container) return;
 
         const wrapper = container.querySelector('.custom-slider-wrapper');
-        if (!wrapper) return;
+        const prevBtn = container.querySelector('.custom-slider-prev');
+        const nextBtn = container.querySelector('.custom-slider-next');
 
-        const slideWidth = wrapper.querySelector('.custom-slide').offsetWidth;
-        const scrollAmount = slideWidth * direction;
+        function updateButtons() {
+            if (!wrapper) return;
+            const isAtStart = wrapper.scrollLeft <= 10;
+            const isAtEnd = wrapper.scrollLeft >= wrapper.scrollWidth - wrapper.clientWidth - 10;
+            if (prevBtn) prevBtn.style.display = isAtStart ? 'none' : 'flex';
+            if (nextBtn) nextBtn.style.display = isAtEnd ? 'none' : 'flex';
+        }
 
-        wrapper.scrollBy({
-            left: scrollAmount,
-            behavior: 'smooth'
-        });
-    }
-
+        if (wrapper) {
+            wrapper.addEventListener('scroll', updateButtons);
+            updateButtons();
+        }
+    })();
     </script>
 
     <style>
@@ -235,54 +239,13 @@ if (!function_exists('arcuras_lyrics_slider')) {
     .custom-slider-next {
         display: none !important;
     }
-    /* Responsive slide widths and heights */
-    #<?php echo esc_attr($slider_id); ?> .custom-slide {
-        flex: 0 0 40%; /* Mobile: 2.5 cards */
-        scroll-snap-align: start;
-        max-width: 400px; /* Max card width */
-    }
-
+    /* Responsive slide heights - width is fixed at 280px via inline style */
     #<?php echo esc_attr($slider_id); ?> .custom-slide > div {
         height: auto !important;
     }
 
     #<?php echo esc_attr($slider_id); ?> .hero-card {
         height: auto !important;
-    }
-
-    @media (min-width: 640px) {
-        #<?php echo esc_attr($slider_id); ?> .custom-slide {
-            flex: 0 0 40%; /* 2.5 cards */
-            max-width: 350px;
-        }
-    }
-
-    @media (min-width: 768px) {
-        #<?php echo esc_attr($slider_id); ?> .custom-slide {
-            flex: 0 0 33.333%; /* 3 cards */
-            max-width: 320px;
-        }
-    }
-
-    @media (min-width: 1024px) {
-        #<?php echo esc_attr($slider_id); ?> .custom-slide {
-            flex: 0 0 25%; /* 4 cards */
-            max-width: 300px;
-        }
-    }
-
-    @media (min-width: 1280px) {
-        #<?php echo esc_attr($slider_id); ?> .custom-slide {
-            flex: 0 0 20%; /* 5 cards */
-            max-width: 280px;
-        }
-    }
-
-    @media (min-width: 1536px) {
-        #<?php echo esc_attr($slider_id); ?> .custom-slide {
-            flex: 0 0 16.666%; /* 6 cards */
-            max-width: 280px;
-        }
     }
 
     /* Desktop optimization */

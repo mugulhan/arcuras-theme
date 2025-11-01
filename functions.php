@@ -146,7 +146,7 @@ add_filter('wp_sitemaps_enabled', '__return_false', 99);
 /**
  * Define constants
  */
-define('GUFTE_VERSION', '2.13.7');
+define('GUFTE_VERSION', '2.13.8');
 define('GUFTE_DIR', get_template_directory());
 
 // ngrok modunda URI'yi düzelt
@@ -185,6 +185,7 @@ require_once get_template_directory() . '/inc/admin-regenerate-thumbnails.php';
 require_once get_template_directory() . '/inc/admin-fix-avif-images.php';
 require_once get_template_directory() . '/inc/template-functions.php';
 require_once get_template_directory() . '/inc/language-taxonomy.php';
+require_once get_template_directory() . '/inc/taxonomy-seo-data.php';
 require_once get_template_directory() . '/inc/translation-url-handler.php';
 require_once get_template_directory() . '/inc/translation-seo.php';
 require_once get_template_directory() . '/inc/translation-sitemap.php';
