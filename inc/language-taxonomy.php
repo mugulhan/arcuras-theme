@@ -354,6 +354,13 @@ function arcuras_get_language_term_data() {
             'flag' => '🇰🇿',
             'iso_code' => 'kk'
         ),
+        'altai' => array(
+            'name' => 'Altai',
+            'slug' => 'altai',
+            'description' => 'Altai language lyrics and translations',
+            'flag' => '🇷🇺',
+            'iso_code' => 'alt'
+        ),
     );
 
     // Get custom languages from database

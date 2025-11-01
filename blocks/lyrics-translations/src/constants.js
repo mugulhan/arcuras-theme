@@ -32,7 +32,8 @@ export const AVAILABLE_LANGUAGES = [
 	{ value: 'id', label: 'Indonesian (Bahasa Indonesia)' },
 	{ value: 'ba', label: 'Bashkir (Башҡорт теле)' },
 	{ value: 'az', label: 'Azerbaijani (Azərbaycan)' },
-	{ value: 'kk', label: 'Kazakh (Қазақша)' }
+	{ value: 'kk', label: 'Kazakh (Қазақша)' },
+	{ value: 'alt', label: 'Altai (Алтай тил)' }
 ];
 
 /**
@@ -224,6 +225,12 @@ export const SEO_DATA = {
 		meta_suffix: 'Ән сөздерін оқыңыз, әртүрлі тілдердегі аудармаларды табыңыз және толық түсініктемелерді зерттеңіз',
 		translation_suffix: 'Қазақ тіліне аударма',
 		translation_meta_suffix: 'Түпнұсқа мәтін және түсініктемелермен бірге қазақ тіліне аударылған ән сөздері'
+	},
+	alt: {
+		original_suffix: 'Кожоҥ сӧстӧри, Которгон сӧстӧр ла Туружылар',
+		meta_suffix: 'Кожоҥ сӧстӧрин окуп, туужы тилдерде которгон сӧстӧрди табар, ла туружыларды ӧргӧнӧр',
+		translation_suffix: 'Алтай тилге которгон сӧс',
+		translation_meta_suffix: 'Баштапкы текст ла туружылар ла бӧлӧ алтай тилге которгон кожоҥ сӧстӧр'
 	}
 };
 
