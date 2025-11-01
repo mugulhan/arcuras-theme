@@ -102,21 +102,47 @@ git push origin main
 echo -e "${GREEN}✅ Pushed to GitHub${NC}"
 
 echo ""
-echo -e "${BLUE}🔄 Step 6/6: Creating GitHub release...${NC}"
+echo -e "${BLUE}🔄 Step 6/8: Creating theme zip package...${NC}"
+cd ..
+rm -f arcuras.zip arcuras-v${NEW_VERSION}.zip
+zip -r arcuras-v${NEW_VERSION}.zip arcuras \
+  -x "arcuras/.git/*" \
+  -x "arcuras/node_modules/*" \
+  -x "arcuras/.DS_Store" \
+  -x "arcuras/blocks/*/node_modules/*" \
+  -x "arcuras/build/node_modules/*" \
+  -x "arcuras/.gitignore" \
+  -x "arcuras/package-lock.json" \
+  -x "arcuras/blocks/*/package-lock.json" \
+  > /dev/null
+cp arcuras-v${NEW_VERSION}.zip arcuras.zip
+cd arcuras
+echo -e "${GREEN}✅ Theme zip created ($(du -h ../arcuras.zip | cut -f1))${NC}"
+
+echo ""
+echo -e "${BLUE}🔄 Step 7/8: Creating GitHub release...${NC}"
 gh release create "v${NEW_VERSION}" \
     --title "v${NEW_VERSION} - ${CHANGELOG_TITLE}" \
     --notes "**${CHANGELOG_TITLE}**
 
 ${CHANGELOG_ITEMS}
+**Installation:**
+Download \`arcuras.zip\` and upload to WordPress via Appearance > Themes > Add New > Upload Theme
+
 **Full Changelog**: https://github.com/mugulhan/arcuras-theme/compare/v${CURRENT_VERSION}...v${NEW_VERSION}"
 echo -e "${GREEN}✅ GitHub release created${NC}"
 
 echo ""
+echo -e "${BLUE}🔄 Step 8/8: Uploading theme zip to release...${NC}"
+gh release upload "v${NEW_VERSION}" ../arcuras.zip ../arcuras-v${NEW_VERSION}.zip --clobber
+echo -e "${GREEN}✅ Theme zip uploaded to release${NC}"
+
+echo ""
 echo -e "${GREEN}🎉 Deployment completed successfully!${NC}"
 echo -e "${BLUE}Release URL: https://github.com/mugulhan/arcuras-theme/releases/tag/v${NEW_VERSION}${NC}"
+echo -e "${BLUE}Download: https://github.com/mugulhan/arcuras-theme/releases/download/v${NEW_VERSION}/arcuras.zip${NC}"
 echo ""
-echo -e "${YELLOW}⚠️  Don't forget to update on production:${NC}"
-echo -e "  1. Go to https://arcuras.com/wp-admin/update-core.php"
-echo -e "  2. Click 'Re-check' button"
-echo -e "  3. Go to https://arcuras.com/wp-admin/themes.php"
-echo -e "  4. Update Arcuras theme to v${NEW_VERSION}"
+echo -e "${YELLOW}⚠️  WordPress will auto-detect update in ~12 hours, or update manually:${NC}"
+echo -e "  1. Go to https://arcuras.com/wp-admin/themes.php"
+echo -e "  2. Update Arcuras theme to v${NEW_VERSION} (or wait for auto-update)"
+echo -e "  3. Or download: wget https://github.com/mugulhan/arcuras-theme/releases/download/v${NEW_VERSION}/arcuras.zip"
