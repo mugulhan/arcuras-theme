@@ -30,6 +30,42 @@ add_action('admin_menu', 'arcuras_theme_settings_menu');
  * Theme Settings Page
  */
 function arcuras_theme_settings_page() {
+    // Handle cache clearing
+    if (isset($_POST['arcuras_clear_cache'])) {
+        check_admin_referer('arcuras_settings_nonce');
+
+        $cleared_items = array();
+
+        // Clear WordPress transients
+        global $wpdb;
+        $transients_cleared = $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_%' OR option_name LIKE '_site_transient_%'");
+        if ($transients_cleared !== false) {
+            $cleared_items[] = "WordPress Transients ({$transients_cleared} items)";
+        }
+
+        // Clear WordPress object cache
+        wp_cache_flush();
+        $cleared_items[] = 'Object Cache';
+
+        // Clear theme update cache
+        delete_site_transient('update_themes');
+        $cleared_items[] = 'Theme Update Cache';
+
+        // Clear plugin update cache
+        delete_site_transient('update_plugins');
+        $cleared_items[] = 'Plugin Update Cache';
+
+        // Clear rewrite rules cache
+        flush_rewrite_rules();
+        $cleared_items[] = 'Rewrite Rules';
+
+        // Clear language SEO cache (if any)
+        wp_cache_delete('arcuras_language_seo_settings', 'options');
+        $cleared_items[] = 'Language SEO Cache';
+
+        echo '<div class="notice notice-success is-dismissible"><p><strong>✅ Cache cleared successfully!</strong><br>Cleared: ' . implode(', ', $cleared_items) . '</p></div>';
+    }
+
     // Save settings
     if (isset($_POST['arcuras_settings_submit'])) {
         check_admin_referer('arcuras_settings_nonce');
@@ -109,6 +145,10 @@ function arcuras_theme_settings_page() {
             <a href="?page=arcuras-theme-settings&tab=ai-translation"
                class="nav-tab <?php echo $active_tab == 'ai-translation' ? 'nav-tab-active' : ''; ?>">
                 🤖 AI Translation
+            </a>
+            <a href="?page=arcuras-theme-settings&tab=tools"
+               class="nav-tab <?php echo $active_tab == 'tools' ? 'nav-tab-active' : ''; ?>">
+                🛠️ Tools
             </a>
         </h2>
 
@@ -453,12 +493,118 @@ function arcuras_theme_settings_page() {
                         </td>
                     </tr>
                 </table>
+
+            <?php elseif ($active_tab == 'tools'): ?>
+                <div style="max-width: 800px;">
+                    <h2>🛠️ Theme Tools</h2>
+                    <p>Utilities and maintenance tools for the Arcuras theme.</p>
+
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row">
+                                <label>Clear All Caches</label>
+                            </th>
+                            <td>
+                                <p class="description" style="margin-bottom: 15px;">
+                                    Clear all WordPress caches to see the latest changes. This includes:<br>
+                                    • WordPress Transients<br>
+                                    • Object Cache<br>
+                                    • Theme Update Cache<br>
+                                    • Plugin Update Cache<br>
+                                    • Rewrite Rules<br>
+                                    • Language SEO Cache<br>
+                                    <br>
+                                    <strong>Use this after:</strong><br>
+                                    • Updating SEO settings<br>
+                                    • Updating theme version<br>
+                                    • Making changes to language settings<br>
+                                    • When old data appears on frontend
+                                </p>
+                                <button type="submit" name="arcuras_clear_cache" class="button button-secondary"
+                                        onclick="return confirm('Are you sure you want to clear all caches? This will temporarily slow down your site until caches are rebuilt.');">
+                                    🗑️ Clear All Caches
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row">
+                                <label>Theme Information</label>
+                            </th>
+                            <td>
+                                <?php
+                                $theme = wp_get_theme();
+                                ?>
+                                <table class="widefat" style="max-width: 500px;">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Theme Name:</strong></td>
+                                            <td><?php echo esc_html($theme->get('Name')); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Version:</strong></td>
+                                            <td><?php echo esc_html($theme->get('Version')); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Author:</strong></td>
+                                            <td><?php echo esc_html($theme->get('Author')); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Update URI:</strong></td>
+                                            <td><?php echo esc_html($theme->get('UpdateURI')); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>WordPress Version:</strong></td>
+                                            <td><?php echo esc_html(get_bloginfo('version')); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>PHP Version:</strong></td>
+                                            <td><?php echo esc_html(phpversion()); ?></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row">
+                                <label>Database Info</label>
+                            </th>
+                            <td>
+                                <?php
+                                global $wpdb;
+                                $transient_count = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE '_transient_%' OR option_name LIKE '_site_transient_%'");
+                                $language_seo_settings = get_option('arcuras_language_seo_settings', array());
+                                $language_count = count($language_seo_settings);
+                                ?>
+                                <table class="widefat" style="max-width: 500px;">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Transients in DB:</strong></td>
+                                            <td><?php echo esc_html($transient_count); ?> items</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Languages with SEO:</strong></td>
+                                            <td><?php echo esc_html($language_count); ?> languages</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Database Prefix:</strong></td>
+                                            <td><?php echo esc_html($wpdb->prefix); ?></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             <?php endif; ?>
 
+            <?php if ($active_tab != 'tools'): ?>
             <p class="submit">
                 <input type="submit" name="arcuras_settings_submit" class="button button-primary"
                        value="Save Settings">
             </p>
+            <?php endif; ?>
         </form>
     </div>
     <?php
