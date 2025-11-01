@@ -204,16 +204,31 @@ function arcuras_add_new_language() {
         )
     );
 
-    // Add SEO settings
+    // Add SEO settings with smart defaults
     $seo_settings = get_option('arcuras_language_seo_settings', array());
-    $seo_settings[$lang_code] = array(
-        // Original Language SEO
-        'original_suffix' => !empty($original_title_suffix) ? $original_title_suffix : 'Lyrics, Translations and Annotations',
-        'meta_suffix' => !empty($original_meta_suffix) ? $original_meta_suffix : 'Read lyrics, discover translations in multiple languages, and explore detailed annotations',
 
-        // Translation Language SEO
-        'translation_suffix' => !empty($translation_title_suffix) ? $translation_title_suffix : 'Translation',
-        'translation_meta_suffix' => !empty($translation_meta_suffix) ? $translation_meta_suffix : 'Translated lyrics with original text and annotations'
+    // Generate smart defaults using language name
+    $default_translation_suffix = !empty($lang_name) ? "{$lang_name} Translation" : 'Translation';
+    $default_translation_meta = !empty($lang_name)
+        ? "Translated lyrics in {$lang_name} with original text and annotations"
+        : 'Translated lyrics with original text and annotations';
+
+    $seo_settings[$lang_code] = array(
+        // Original Language SEO (if left empty, use English template)
+        'original_suffix' => !empty($original_title_suffix)
+            ? $original_title_suffix
+            : 'Lyrics, Translations and Annotations',
+        'meta_suffix' => !empty($original_meta_suffix)
+            ? $original_meta_suffix
+            : 'Read lyrics, discover translations in multiple languages, and explore detailed annotations',
+
+        // Translation Language SEO (if left empty, generate from language name)
+        'translation_suffix' => !empty($translation_title_suffix)
+            ? $translation_title_suffix
+            : $default_translation_suffix,
+        'translation_meta_suffix' => !empty($translation_meta_suffix)
+            ? $translation_meta_suffix
+            : $default_translation_meta
     );
     update_option('arcuras_language_seo_settings', $seo_settings);
 
@@ -1763,22 +1778,22 @@ function arcuras_manage_languages_page() {
                     <div class="grid grid-cols-1 gap-4">
                         <div>
                             <label for="original-title-suffix" class="block text-sm font-medium text-gray-700 mb-2">
-                                Title Suffix
+                                Title Suffix <span class="text-gray-500 font-normal">(Optional)</span>
                             </label>
                             <input type="text" id="original-title-suffix" name="original_title_suffix"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                   placeholder="e.g., Lyrics, Translations and Annotations">
-                            <p class="mt-1 text-xs text-gray-600">Example: [Song Title] | Lyrics, Translations and Annotations</p>
+                                   placeholder="Leave empty for default: Lyrics, Translations and Annotations">
+                            <p class="mt-1 text-xs text-gray-600">Default: [Song Title] | Lyrics, Translations and Annotations</p>
                         </div>
 
                         <div>
                             <label for="original-meta-suffix" class="block text-sm font-medium text-gray-700 mb-2">
-                                Meta Description Suffix
+                                Meta Description Suffix <span class="text-gray-500 font-normal">(Optional)</span>
                             </label>
                             <textarea id="original-meta-suffix" name="original_meta_suffix" rows="2"
                                       class="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                      placeholder="e.g., Read lyrics, discover translations in multiple languages, and explore detailed annotations"></textarea>
-                            <p class="mt-1 text-xs text-gray-600">Example: [Song Title] - Read lyrics, discover translations...</p>
+                                      placeholder="Leave empty for default English template"></textarea>
+                            <p class="mt-1 text-xs text-gray-600">Default: Read lyrics, discover translations in multiple languages...</p>
                         </div>
                     </div>
                 </div>
@@ -1796,22 +1811,22 @@ function arcuras_manage_languages_page() {
                     <div class="grid grid-cols-1 gap-4">
                         <div>
                             <label for="translation-title-suffix" class="block text-sm font-medium text-gray-700 mb-2">
-                                Title Suffix
+                                Title Suffix <span class="text-gray-500 font-normal">(Optional)</span>
                             </label>
                             <input type="text" id="translation-title-suffix" name="translation_title_suffix"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
-                                   placeholder="e.g., Translation">
-                            <p class="mt-1 text-xs text-gray-600">Example: [Song Title] | Translation</p>
+                                   placeholder="Leave empty for default: [Language Name] Translation">
+                            <p class="mt-1 text-xs text-gray-600">Default: [Song Title] | [Language Name] Translation</p>
                         </div>
 
                         <div>
                             <label for="translation-meta-suffix" class="block text-sm font-medium text-gray-700 mb-2">
-                                Meta Description Suffix
+                                Meta Description Suffix <span class="text-gray-500 font-normal">(Optional)</span>
                             </label>
                             <textarea id="translation-meta-suffix" name="translation_meta_suffix" rows="2"
                                       class="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
-                                      placeholder="e.g., Translated lyrics with original text and annotations"></textarea>
-                            <p class="mt-1 text-xs text-gray-600">Example: [Song Title] - Translated lyrics with original text...</p>
+                                      placeholder="Leave empty for: Translated lyrics in [Language Name]..."></textarea>
+                            <p class="mt-1 text-xs text-gray-600">Default: Translated lyrics in [Language Name] with original text and annotations</p>
                         </div>
                     </div>
                 </div>
@@ -2130,3 +2145,79 @@ function arcuras_manage_languages_page() {
     </style>
     <?php
 }
+
+/**
+ * Initialize SEO settings for all default languages
+ * This ensures that all default languages have SEO settings in the database
+ */
+function arcuras_initialize_default_language_seo_settings() {
+    // Get existing SEO settings
+    $seo_settings = get_option('arcuras_language_seo_settings', array());
+
+    // Get all language term data (includes all default languages)
+    if (!function_exists('arcuras_get_language_term_data')) {
+        return;
+    }
+
+    $language_data = arcuras_get_language_term_data();
+
+    // SEO data for all languages (matching constants.js)
+    $seo_data = array(
+        'en' => array('original_suffix' => 'Lyrics, Translations and Annotations', 'meta_suffix' => 'Read lyrics, discover translations in multiple languages, and explore detailed annotations', 'translation_suffix' => 'Translation', 'translation_meta_suffix' => 'Translated lyrics with original text and annotations'),
+        'es' => array('original_suffix' => 'Letras, Traducciones y Anotaciones', 'meta_suffix' => 'Lee las letras, descubre traducciones en varios idiomas y explora anotaciones detalladas', 'translation_suffix' => 'Traducción al Español', 'translation_meta_suffix' => 'Letras traducidas al español con texto original y anotaciones'),
+        'tr' => array('original_suffix' => 'Şarkı Sözleri, Çeviriler ve Açıklamalar', 'meta_suffix' => 'Şarkı sözlerini okuyun, birden fazla dilde çevirileri keşfedin ve detaylı açıklamaları inceleyin', 'translation_suffix' => 'Türkçe Çeviri', 'translation_meta_suffix' => 'Orijinal metin ve açıklamalarla birlikte Türkçe çeviri'),
+        'de' => array('original_suffix' => 'Liedtext, Übersetzungen und Anmerkungen', 'meta_suffix' => 'Lesen Sie die Texte, entdecken Sie Übersetzungen in mehreren Sprachen und erkunden Sie detaillierte Anmerkungen', 'translation_suffix' => 'Deutsche Übersetzung', 'translation_meta_suffix' => 'Übersetzte Texte mit Originaltext und Anmerkungen'),
+        'fr' => array('original_suffix' => 'Paroles, Traductions et Annotations', 'meta_suffix' => 'Lisez les paroles, découvrez les traductions en plusieurs langues et explorez les annotations détaillées', 'translation_suffix' => 'Traduction Française', 'translation_meta_suffix' => 'Paroles traduites en français avec texte original et annotations'),
+        'ar' => array('original_suffix' => 'كلمات الأغنية والترجمات والتعليقات', 'meta_suffix' => 'اقرأ الكلمات، اكتشف الترجمات بعدة لغات، واستكشف التعليقات التفصيلية', 'translation_suffix' => 'ترجمة عربية', 'translation_meta_suffix' => 'كلمات مترجمة مع النص الأصلي والتعليقات'),
+        'it' => array('original_suffix' => 'Testo, Traduzioni e Annotazioni', 'meta_suffix' => 'Leggi i testi, scopri le traduzioni in più lingue ed esplora le annotazioni dettagliate', 'translation_suffix' => 'Traduzione Italiana', 'translation_meta_suffix' => 'Testo tradotto in italiano con testo originale e annotazioni'),
+        'pt' => array('original_suffix' => 'Letras, Traduções e Anotações', 'meta_suffix' => 'Leia as letras, descubra traduções em vários idiomas e explore anotações detalhadas', 'translation_suffix' => 'Tradução em Português', 'translation_meta_suffix' => 'Letras traduzidas em português com texto original e anotações'),
+        'ru' => array('original_suffix' => 'Текст песни, переводы и комментарии', 'meta_suffix' => 'Читайте тексты, открывайте переводы на несколько языков и изучайте подробные комментарии', 'translation_suffix' => 'Русский перевод', 'translation_meta_suffix' => 'Переведенный текст с оригиналом и комментариями'),
+        'ja' => array('original_suffix' => '歌詞、翻訳、注釈', 'meta_suffix' => '歌詞を読み、複数言語の翻訳を発見し、詳細な注釈を探索してください', 'translation_suffix' => '日本語翻訳', 'translation_meta_suffix' => '原文と注釈付きの日本語訳歌詞'),
+        'ko' => array('original_suffix' => '가사, 번역 및 주석', 'meta_suffix' => '가사를 읽고, 여러 언어로 된 번역을 발견하고, 상세한 주석을 탐색하세요', 'translation_suffix' => '한국어 번역', 'translation_meta_suffix' => '원문과 주석이 포함된 한국어 번역 가사'),
+        'zh' => array('original_suffix' => '歌词、翻译和注释', 'meta_suffix' => '阅读歌词，发现多种语言的翻译，并探索详细的注释', 'translation_suffix' => '中文翻译', 'translation_meta_suffix' => '带有原文和注释的中文翻译歌词'),
+        'hi' => array('original_suffix' => 'गीत, अनुवाद और टिप्पणियाँ', 'meta_suffix' => 'गीत पढ़ें, कई भाषाओं में अनुवाद खोजें, और विस्तृत टिप्पणियों का अन्वेषण करें', 'translation_suffix' => 'हिंदी अनुवाद', 'translation_meta_suffix' => 'मूल पाठ और टिप्पणियों के साथ हिंदी अनुवादित गीत'),
+        'nl' => array('original_suffix' => 'Songteksten, Vertalingen en Annotaties', 'meta_suffix' => 'Lees songteksten, ontdek vertalingen in meerdere talen en verken gedetailleerde annotaties', 'translation_suffix' => 'Nederlandse Vertaling', 'translation_meta_suffix' => 'Vertaalde songtekst met originele tekst en annotaties'),
+        'pl' => array('original_suffix' => 'Teksty Piosenek, Tłumaczenia i Adnotacje', 'meta_suffix' => 'Czytaj teksty, odkrywaj tłumaczenia w wielu językach i eksploruj szczegółowe adnotacje', 'translation_suffix' => 'Polskie Tłumaczenie', 'translation_meta_suffix' => 'Przetłumaczone teksty z oryginalnym tekstem i adnotacjami'),
+        'sv' => array('original_suffix' => 'Texter, Översättningar och Kommentarer', 'meta_suffix' => 'Läs texter, upptäck översättningar på flera språk och utforska detaljerade kommentarer', 'translation_suffix' => 'Svensk Översättning', 'translation_meta_suffix' => 'Översatta texter med originaltext och kommentarer'),
+        'no' => array('original_suffix' => 'Tekster, Oversettelser og Merknader', 'meta_suffix' => 'Les tekster, oppdag oversettelser på flere språk og utforsk detaljerte merknader', 'translation_suffix' => 'Norsk Oversettelse', 'translation_meta_suffix' => 'Oversatte tekster med originaltekst og merknader'),
+        'da' => array('original_suffix' => 'Tekster, Oversættelser og Annotationer', 'meta_suffix' => 'Læs tekster, opdag oversættelser på flere sprog og udforsk detaljerede annotationer', 'translation_suffix' => 'Dansk Oversættelse', 'translation_meta_suffix' => 'Oversatte tekster med originaltekst og annotationer'),
+        'fi' => array('original_suffix' => 'Sanoitukset, Käännökset ja Huomautukset', 'meta_suffix' => 'Lue sanoituksia, löydä käännöksiä useilla kielillä ja tutustu yksityiskohtaisiin huomautuksiin', 'translation_suffix' => 'Suomenkielinen Käännös', 'translation_meta_suffix' => 'Käännetyt sanoitukset alkuperäistekstin ja huomautusten kera'),
+        'el' => array('original_suffix' => 'Στίχοι, Μεταφράσεις και Σημειώσεις', 'meta_suffix' => 'Διαβάστε στίχους, ανακαλύψτε μεταφράσεις σε πολλές γλώσσες και εξερευνήστε λεπτομερείς σημειώσεις', 'translation_suffix' => 'Ελληνική Μετάφραση', 'translation_meta_suffix' => 'Μεταφρασμένοι στίχοι με πρωτότυπο κείμενο και σημειώσεις'),
+        'he' => array('original_suffix' => 'מילים, תרגומים והערות', 'meta_suffix' => 'קרא מילים, גלה תרגומים במספר שפות וחקור הערות מפורטות', 'translation_suffix' => 'תרגום לעברית', 'translation_meta_suffix' => 'מילים מתורגמות עם טקסט מקורי והערות'),
+        'uk' => array('original_suffix' => 'Тексти пісень, переклади та коментарі', 'meta_suffix' => 'Читайте тексти, відкривайте переклади кількома мовами та вивчайте детальні коментарі', 'translation_suffix' => 'Український переклад', 'translation_meta_suffix' => 'Перекладений текст з оригіналом та коментарями'),
+        'cs' => array('original_suffix' => 'Texty, Překlady a Poznámky', 'meta_suffix' => 'Čtěte texty, objevujte překlady v několika jazycích a prozkoumávejte podrobné poznámky', 'translation_suffix' => 'Český Překlad', 'translation_meta_suffix' => 'Přeložené texty s původním textem a poznámkami'),
+        'ro' => array('original_suffix' => 'Versuri, Traduceri și Adnotări', 'meta_suffix' => 'Citește versurile, descoperă traduceri în mai multe limbi și explorează adnotările detaliate', 'translation_suffix' => 'Traducere în Română', 'translation_meta_suffix' => 'Versuri traduse cu text original și adnotări'),
+        'hu' => array('original_suffix' => 'Dalszövegek, Fordítások és Megjegyzések', 'meta_suffix' => 'Olvasd a dalszövegeket, fedezd fel a fordításokat több nyelven és fedezd fel a részletes megjegyzéseket', 'translation_suffix' => 'Magyar Fordítás', 'translation_meta_suffix' => 'Lefordított dalszöveg eredeti szöveggel és megjegyzésekkel'),
+        'th' => array('original_suffix' => 'เนื้อเพลง, การแปล และคำอธิบาย', 'meta_suffix' => 'อ่านเนื้อเพลง ค้นพบการแปลในหลายภาษา และสำรวจคำอธิบายโดยละเอียด', 'translation_suffix' => 'แปลภาษาไทย', 'translation_meta_suffix' => 'เนื้อเพลงที่แปลพร้อมข้อความต้นฉบับและคำอธิบาย'),
+        'vi' => array('original_suffix' => 'Lời bài hát, Bản dịch và Chú thích', 'meta_suffix' => 'Đọc lời bài hát, khám phá bản dịch bằng nhiều ngôn ngữ và khám phá chú thích chi tiết', 'translation_suffix' => 'Bản dịch Tiếng Việt', 'translation_meta_suffix' => 'Lời bài hát được dịch sang tiếng Việt với văn bản gốc và chú thích'),
+        'id' => array('original_suffix' => 'Lirik, Terjemahan dan Anotasi', 'meta_suffix' => 'Baca lirik, temukan terjemahan dalam berbagai bahasa dan jelajahi anotasi terperinci', 'translation_suffix' => 'Terjemahan Bahasa Indonesia', 'translation_meta_suffix' => 'Lirik terjemahan bahasa Indonesia dengan teks asli dan anotasi'),
+        'ba' => array('original_suffix' => 'Йыр һүҙҙәре, тәржемәләр һәм аңлатмалар', 'meta_suffix' => 'Йыр һүҙҙәрен уҡығыҙ, төрлө телдәрҙәге тәржемәләрҙе табығыҙ һәм тулы аңлатмаларҙы өйрәнегеҙ', 'translation_suffix' => 'Башҡорт тәржемәһе', 'translation_meta_suffix' => 'Башҡорт теленә тәржемә ителгән йыр һүҙҙәре, төп текст һәм аңлатмалар менән'),
+        'az' => array('original_suffix' => 'Mahnı sözləri, Tərcümələr və Açıqlamalar', 'meta_suffix' => 'Mahnı sözlərini oxuyun, müxtəlif dillərdə tərcümələri kəşf edin və ətraflı açıqlamaları araşdırın', 'translation_suffix' => 'Azərbaycan dilinə tərcümə', 'translation_meta_suffix' => 'Orijinal mətn və açıqlamalarla birlikdə Azərbaycan dilinə tərcümə edilmiş mahnı sözləri'),
+        'kk' => array('original_suffix' => 'Ән сөздері, Аудармалар және Түсініктемелер', 'meta_suffix' => 'Ән сөздерін оқыңыз, әртүрлі тілдердегі аудармаларды табыңыз және толық түсініктемелерді зерттеңіз', 'translation_suffix' => 'Қазақ тіліне аударма', 'translation_meta_suffix' => 'Түпнұсқа мәтін және түсініктемелермен бірге қазақ тіліне аударылған ән сөздері'),
+        'alt' => array('original_suffix' => 'Кожоҥ сӧстӧри, Которгон сӧстӧр ла Туружылар', 'meta_suffix' => 'Кожоҥ сӧстӧрин окуп, туужы тилдерде которгон сӧстӧрди табар, ла туружыларды ӧргӧнӧр', 'translation_suffix' => 'Алтай тилге которгон сӧс', 'translation_meta_suffix' => 'Баштапкы текст ла туружылар ла бӧлӧ алтай тилге которгон кожоҥ сӧстӧр'),
+        'mn' => array('original_suffix' => 'Дууны үг, Орчуулга ба Тайлбар', 'meta_suffix' => 'Дууны үг уншиж, олон хэл дээрх орчуулга олж, дэлгэрэнгүй тайлбар судлаарай', 'translation_suffix' => 'Монгол орчуулга', 'translation_meta_suffix' => 'Эх бичвэр ба тайлбартай хамт монгол хэл рүү орчуулсан дууны үг'),
+    );
+
+    // Add SEO settings for each default language if not already exists
+    $updated = false;
+    foreach ($language_data as $lang_key => $lang_info) {
+        $iso_code = isset($lang_info['iso_code']) ? $lang_info['iso_code'] : $lang_key;
+
+        // Only add if doesn't exist in database AND we have SEO data for it
+        if (!isset($seo_settings[$iso_code]) && isset($seo_data[$iso_code])) {
+            $seo_settings[$iso_code] = $seo_data[$iso_code];
+            $updated = true;
+        }
+    }
+
+    // Save to database if we added any new settings
+    if ($updated) {
+        update_option('arcuras_language_seo_settings', $seo_settings);
+    }
+}
+
+// Run on theme activation/switch
+add_action('after_switch_theme', 'arcuras_initialize_default_language_seo_settings');
+
+// Also run on admin_init to catch any missing settings
+add_action('admin_init', 'arcuras_initialize_default_language_seo_settings', 5);

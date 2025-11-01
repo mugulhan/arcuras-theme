@@ -14,7 +14,36 @@ if (!defined('ABSPATH')) {
  * Language settings with native names
  */
 function arcuras_get_language_seo_data() {
-    return array(
+    // Get SEO settings from database
+    $db_seo_settings = get_option('arcuras_language_seo_settings', array());
+
+    // Get language term data (includes all languages with their names)
+    if (function_exists('arcuras_get_language_term_data')) {
+        $language_data = arcuras_get_language_term_data();
+        $merged_data = array();
+
+        foreach ($language_data as $lang_key => $lang_info) {
+            $iso_code = isset($lang_info['iso_code']) ? $lang_info['iso_code'] : $lang_key;
+
+            // Check if we have database SEO settings for this language
+            if (isset($db_seo_settings[$iso_code]) && !empty($db_seo_settings[$iso_code]['original_suffix'])) {
+                $merged_data[$iso_code] = array(
+                    'name' => isset($lang_info['name']) ? $lang_info['name'] : $lang_key,
+                    'native_name' => isset($lang_info['name']) ? $lang_info['name'] : $lang_key,
+                    'title_suffix' => isset($db_seo_settings[$iso_code]['translation_suffix'])
+                        ? $db_seo_settings[$iso_code]['translation_suffix']
+                        : 'Translation',
+                    'original_suffix' => $db_seo_settings[$iso_code]['original_suffix'],
+                    'meta_template' => isset($db_seo_settings[$iso_code]['translation_meta_suffix'])
+                        ? $db_seo_settings[$iso_code]['translation_meta_suffix']
+                        : 'Translated lyrics with original text and annotations'
+                );
+            }
+        }
+    }
+
+    // Hardcoded fallback data (for backward compatibility)
+    $fallback_data = array(
         'en' => array(
             'name' => 'English',
             'native_name' => 'English',
@@ -212,6 +241,13 @@ function arcuras_get_language_seo_data() {
             'meta_template' => 'Temukan lirik %s%s dalam bahasa Indonesia. Baca, terjemahkan dan nikmati lirik lagu ini.'
         )
     );
+
+    // Merge database data with fallback data (database takes priority)
+    if (isset($merged_data) && !empty($merged_data)) {
+        return array_merge($fallback_data, $merged_data);
+    }
+
+    return $fallback_data;
 }
 
 /**

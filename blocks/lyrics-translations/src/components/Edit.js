@@ -480,7 +480,10 @@ const Edit = ({ attributes, setAttributes }) => {
 						{(tab) => {
 							const index = languages.findIndex(l => l.code === tab.name);
 							const lang = languages[index];
-							const seoPreview = getSEOPreview(lang, postTitle, seoSettings);
+
+							// Generate both Original and Translation SEO previews
+							const originalSeoPreview = getSEOPreview({ ...lang, isOriginal: true }, postTitle, seoSettings);
+							const translationSeoPreview = getSEOPreview({ ...lang, isOriginal: false }, postTitle, seoSettings);
 
 							return (
 								<div className="lyrics-tab-content">
@@ -621,7 +624,7 @@ const Edit = ({ attributes, setAttributes }) => {
 										</span>
 									</div>
 
-									{/* SEO Preview */}
+									{/* SEO Preview - Detailed */}
 									<div style={{
 										marginTop: '16px',
 										padding: '16px',
@@ -633,45 +636,128 @@ const Edit = ({ attributes, setAttributes }) => {
 											fontSize: '12px',
 											fontWeight: '600',
 											color: '#667eea',
-											marginBottom: '12px',
+											marginBottom: '16px',
 											textTransform: 'uppercase',
 											letterSpacing: '0.5px'
 										}}>
-											🔍 SEO Preview
+											🔍 SEO Preview ({lang.name || lang.code.toUpperCase()})
 										</div>
-										<div style={{ marginBottom: '8px' }}>
+
+										{/* Original Language SEO */}
+										<div style={{
+											marginBottom: '16px',
+											paddingBottom: '16px',
+											borderBottom: '1px solid #d0e0f5'
+										}}>
 											<div style={{
 												fontSize: '11px',
-												color: '#666',
-												marginBottom: '4px',
-												fontWeight: '500'
+												fontWeight: '600',
+												color: '#4a5568',
+												marginBottom: '8px',
+												display: 'flex',
+												alignItems: 'center',
+												gap: '6px'
 											}}>
-												Title Tag:
+												<span style={{
+													background: '#3b82f6',
+													color: 'white',
+													padding: '2px 8px',
+													borderRadius: '4px',
+													fontSize: '10px'
+												}}>
+													ORIGINAL
+												</span>
+												When this language is the original
 											</div>
-											<div style={{
-												fontSize: '18px',
-												color: '#1a0dab',
-												fontWeight: '400',
-												lineHeight: '1.3'
-											}}>
-												{seoPreview.title}
+											<div style={{ marginBottom: '8px' }}>
+												<div style={{
+													fontSize: '10px',
+													color: '#888',
+													marginBottom: '3px'
+												}}>
+													Title:
+												</div>
+												<div style={{
+													fontSize: '16px',
+													color: '#1a0dab',
+													fontWeight: '400',
+													lineHeight: '1.3'
+												}}>
+													{originalSeoPreview.title}
+												</div>
+											</div>
+											<div>
+												<div style={{
+													fontSize: '10px',
+													color: '#888',
+													marginBottom: '3px'
+												}}>
+													Meta Description:
+												</div>
+												<div style={{
+													fontSize: '12px',
+													color: '#545454',
+													lineHeight: '1.4'
+												}}>
+													{originalSeoPreview.description}
+												</div>
 											</div>
 										</div>
+
+										{/* Translation Language SEO */}
 										<div>
 											<div style={{
 												fontSize: '11px',
-												color: '#666',
-												marginBottom: '4px',
-												fontWeight: '500'
+												fontWeight: '600',
+												color: '#4a5568',
+												marginBottom: '8px',
+												display: 'flex',
+												alignItems: 'center',
+												gap: '6px'
 											}}>
-												Meta Description:
+												<span style={{
+													background: '#10b981',
+													color: 'white',
+													padding: '2px 8px',
+													borderRadius: '4px',
+													fontSize: '10px'
+												}}>
+													TRANSLATION
+												</span>
+												When this language is a translation
 											</div>
-											<div style={{
-												fontSize: '13px',
-												color: '#545454',
-												lineHeight: '1.4'
-											}}>
-												{seoPreview.description}
+											<div style={{ marginBottom: '8px' }}>
+												<div style={{
+													fontSize: '10px',
+													color: '#888',
+													marginBottom: '3px'
+												}}>
+													Title:
+												</div>
+												<div style={{
+													fontSize: '16px',
+													color: '#1a0dab',
+													fontWeight: '400',
+													lineHeight: '1.3'
+												}}>
+													{translationSeoPreview.title}
+												</div>
+											</div>
+											<div>
+												<div style={{
+													fontSize: '10px',
+													color: '#888',
+													marginBottom: '3px'
+												}}>
+													Meta Description:
+												</div>
+												<div style={{
+													fontSize: '12px',
+													color: '#545454',
+													lineHeight: '1.4'
+												}}>
+													{translationSeoPreview.description}
+												</div>
 											</div>
 										</div>
 									</div>
