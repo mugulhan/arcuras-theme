@@ -30,7 +30,9 @@ export const AVAILABLE_LANGUAGES = [
 	{ value: 'th', label: 'Thai (ไทย)' },
 	{ value: 'vi', label: 'Vietnamese (Tiếng Việt)' },
 	{ value: 'id', label: 'Indonesian (Bahasa Indonesia)' },
-	{ value: 'ba', label: 'Bashkir (Башҡорт теле)' }
+	{ value: 'ba', label: 'Bashkir (Башҡорт теле)' },
+	{ value: 'az', label: 'Azerbaijani (Azərbaycan)' },
+	{ value: 'kk', label: 'Kazakh (Қазақша)' }
 ];
 
 /**
@@ -210,6 +212,18 @@ export const SEO_DATA = {
 		meta_suffix: 'Йыр һүҙҙәрен уҡығыҙ, төрлө телдәрҙәге тәржемәләрҙе табығыҙ һәм тулы аңлатмаларҙы өйрәнегеҙ',
 		translation_suffix: 'Башҡорт тәржемәһе',
 		translation_meta_suffix: 'Башҡорт теленә тәржемә ителгән йыр һүҙҙәре, төп текст һәм аңлатмалар менән'
+	},
+	az: {
+		original_suffix: 'Mahnı sözləri, Tərcümələr və Açıqlamalar',
+		meta_suffix: 'Mahnı sözlərini oxuyun, müxtəlif dillərdə tərcümələri kəşf edin və ətraflı açıqlamaları araşdırın',
+		translation_suffix: 'Azərbaycan dilinə tərcümə',
+		translation_meta_suffix: 'Orijinal mətn və açıqlamalarla birlikdə Azərbaycan dilinə tərcümə edilmiş mahnı sözləri'
+	},
+	kk: {
+		original_suffix: 'Ән сөздері, Аудармалар және Түсініктемелер',
+		meta_suffix: 'Ән сөздерін оқыңыз, әртүрлі тілдердегі аудармаларды табыңыз және толық түсініктемелерді зерттеңіз',
+		translation_suffix: 'Қазақ тіліне аударма',
+		translation_meta_suffix: 'Түпнұсқа мәтін және түсініктемелермен бірге қазақ тіліне аударылған ән сөздері'
 	}
 };
 

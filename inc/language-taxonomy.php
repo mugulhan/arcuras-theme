@@ -340,6 +340,20 @@ function arcuras_get_language_term_data() {
             'flag' => '🇷🇺',
             'iso_code' => 'ba'
         ),
+        'azerbaijani' => array(
+            'name' => 'Azerbaijani',
+            'slug' => 'azerbaijani',
+            'description' => 'Azerbaijani language lyrics and translations',
+            'flag' => '🇦🇿',
+            'iso_code' => 'az'
+        ),
+        'kazakh' => array(
+            'name' => 'Kazakh',
+            'slug' => 'kazakh',
+            'description' => 'Kazakh language lyrics and translations',
+            'flag' => '🇰🇿',
+            'iso_code' => 'kk'
+        ),
     );
 
     // Get custom languages from database
