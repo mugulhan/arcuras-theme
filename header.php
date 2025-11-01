@@ -177,11 +177,19 @@ if (is_single()) {
       }
       
       /* Logo boyutunu düzenle */
+      .custom-logo-link {
+        display: inline-block !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        line-height: 0 !important;
+      }
+
       .custom-logo-link img {
-        max-height: 40px;
-        width: auto;
-        transition: transform 0.3s ease;
-        border-radius: 6px;
+        max-height: 40px !important;
+        width: auto !important;
+        transition: transform 0.3s ease !important;
+        display: block !important;
+        border-radius: 8px !important;
       }
 
       /* Logo hover animasyonu */

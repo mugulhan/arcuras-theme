@@ -146,7 +146,7 @@ add_filter('wp_sitemaps_enabled', '__return_false', 99);
 /**
  * Define constants
  */
-define('GUFTE_VERSION', '2.13.10');
+define('GUFTE_VERSION', '2.13.11');
 define('GUFTE_DIR', get_template_directory());
 
 // ngrok modunda URI'yi düzelt
@@ -12866,3 +12866,20 @@ $arcurasUpdateChecker = PucFactory::buildUpdateChecker(
 
 // Enable release assets - use GitHub releases instead of branch
 $arcurasUpdateChecker->getVcsApi()->enableReleaseAssets();
+
+/**
+ * Add inline style to custom logo link
+ * Adds border-radius to the logo wrapper for rounded corners
+ *
+ * @since 2.13.11
+ */
+add_filter('get_custom_logo', 'arcuras_add_logo_border_radius');
+function arcuras_add_logo_border_radius($html) {
+    // Add inline style to the logo link wrapper
+    $html = str_replace(
+        'class="custom-logo-link"',
+        'class="custom-logo-link" style="display: inline-block; border-radius: 8px; overflow: hidden; line-height: 0;"',
+        $html
+    );
+    return $html;
+}
