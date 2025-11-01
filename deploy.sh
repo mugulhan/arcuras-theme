@@ -2,6 +2,12 @@
 
 # Arcuras Theme Deployment Script
 # This script automates the version update and GitHub release process
+#
+# IMPORTANT: Theme uses Plugin Update Checker with GitHub Releases
+# - functions.php MUST use: $arcurasUpdateChecker->getVcsApi()->enableReleaseAssets();
+# - DO NOT use: $arcurasUpdateChecker->setBranch('main');
+# - WordPress will fetch updates from GitHub Releases, not from main branch
+# - Release assets (arcuras.zip) are required for automatic updates
 
 set -e  # Exit on error
 

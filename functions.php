@@ -146,7 +146,7 @@ add_filter('wp_sitemaps_enabled', '__return_false', 99);
 /**
  * Define constants
  */
-define('GUFTE_VERSION', '2.13.9');
+define('GUFTE_VERSION', '2.13.10');
 define('GUFTE_DIR', get_template_directory());
 
 // ngrok modunda URI'yi düzelt
