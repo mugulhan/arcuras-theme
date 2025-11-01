@@ -28,17 +28,39 @@ const Edit = ({ attributes, setAttributes }) => {
 	// SEO settings from database
 	const [seoSettings, setSeoSettings] = useState(null);
 
+	// Available languages from database
+	const [availableLanguages, setAvailableLanguages] = useState(AVAILABLE_LANGUAGES);
+
 	// Get post title for SEO preview
 	const postTitle = useSelect(
 		(select) => select('core/editor')?.getEditedPostAttribute('title') || 'Song Title',
 		[]
 	);
 
-	// Fetch SEO settings from database on mount
+	// Fetch SEO settings and available languages from database on mount
 	useEffect(() => {
-		apiFetch({ path: '/wp-json/arcuras/v1/language-seo-settings' })
+		apiFetch({ path: '/arcuras/v1/language-seo-settings' })
 			.then((settings) => {
 				setSeoSettings(settings);
+
+				// Convert SEO settings to available languages format
+				const languagesFromDB = Object.keys(settings).map(code => ({
+					value: code,
+					label: settings[code].name ? `${settings[code].name} (${code.toUpperCase()})` : code.toUpperCase()
+				}));
+
+				// Merge with existing languages and remove duplicates
+				const mergedLanguages = [...AVAILABLE_LANGUAGES];
+				languagesFromDB.forEach(dbLang => {
+					if (!mergedLanguages.some(lang => lang.value === dbLang.value)) {
+						mergedLanguages.push(dbLang);
+					}
+				});
+
+				// Sort alphabetically by label
+				mergedLanguages.sort((a, b) => a.label.localeCompare(b.label));
+
+				setAvailableLanguages(mergedLanguages);
 			})
 			.catch((error) => {
 				console.error('Error fetching SEO settings:', error);
@@ -167,7 +189,7 @@ const Edit = ({ attributes, setAttributes }) => {
 
 	// Get available languages that haven't been added yet
 	const getAvailableLanguages = () => {
-		return AVAILABLE_LANGUAGES.filter(
+		return availableLanguages.filter(
 			lang => !languages.some(addedLang => addedLang.code === lang.value)
 		);
 	};
@@ -433,7 +455,7 @@ const Edit = ({ attributes, setAttributes }) => {
 								}))}
 								onChange={(value) => {
 									if (value) {
-										const selectedLang = AVAILABLE_LANGUAGES.find(l => l.value === value);
+										const selectedLang = availableLanguages.find(l => l.value === value);
 										if (selectedLang) {
 											addLanguage(selectedLang.value, selectedLang.label);
 										}
@@ -467,18 +489,18 @@ const Edit = ({ attributes, setAttributes }) => {
 										<ComboboxControl
 											label={__('Language', 'gufte')}
 											value={lang.code}
-											options={AVAILABLE_LANGUAGES.map(l => ({
+											options={availableLanguages.map(l => ({
 												value: l.value,
 												label: l.label
 											}))}
 											onChange={(value) => {
-												const selectedLang = AVAILABLE_LANGUAGES.find(l => l.value === value);
+												const selectedLang = availableLanguages.find(l => l.value === value);
 												const newLanguages = languages.map((l, i) => {
 													if (i === index) {
 														return {
 															...l,
 															code: value,
-															name: selectedLang.label
+															name: selectedLang ? selectedLang.label : value
 														};
 													}
 													return l;

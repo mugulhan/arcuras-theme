@@ -297,6 +297,7 @@ function arcuras_migrate_all_lyrics_tables() {
 
 /**
  * Admin page for migration
+ * DISABLED - Migration completed, no longer needed in menu
  */
 function arcuras_migration_admin_page() {
     add_submenu_page(
@@ -308,7 +309,8 @@ function arcuras_migration_admin_page() {
         'arcuras_migration_page_content'
     );
 }
-add_action('admin_menu', 'arcuras_migration_admin_page');
+// DISABLED - Migration tool removed from menu
+// add_action('admin_menu', 'arcuras_migration_admin_page');
 
 /**
  * Migration page content
