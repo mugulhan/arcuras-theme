@@ -124,6 +124,10 @@ function arcuras_update_language_seo() {
     // Save to database
     update_option('arcuras_language_seo_settings', $seo_settings);
 
+    // Clear all WordPress caches
+    wp_cache_flush();
+    wp_cache_delete('arcuras_language_seo_settings', 'options');
+
     wp_send_json_success('SEO settings updated successfully');
 }
 add_action('wp_ajax_update_language_seo', 'arcuras_update_language_seo');
@@ -212,6 +216,16 @@ function arcuras_add_new_language() {
         'translation_meta_suffix' => !empty($translation_meta_suffix) ? $translation_meta_suffix : 'Translated lyrics with original text and annotations'
     );
     update_option('arcuras_language_seo_settings', $seo_settings);
+
+    // Clear all WordPress caches to ensure new language appears immediately
+    wp_cache_flush();
+
+    // Clear transients
+    delete_transient('arcuras_all_languages');
+
+    // If using object cache, delete cached options
+    wp_cache_delete('arcuras_custom_languages', 'options');
+    wp_cache_delete('arcuras_language_seo_settings', 'options');
 
     wp_send_json_success(array(
         'message' => 'Language added successfully',
