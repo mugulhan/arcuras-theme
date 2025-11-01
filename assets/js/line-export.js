@@ -15,6 +15,9 @@
     // Prevent multiple initializations
     let initialized = false;
 
+    // Prevent double downloads
+    let isDownloading = false;
+
     /**
      * Initialize line export functionality
      */
@@ -139,6 +142,8 @@
             const exportBtn = e.target.closest('.export-line');
             if (exportBtn) {
                 e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
                 handleExport(exportBtn.dataset.lineIndex);
                 closeAllDropdowns();
                 return;
@@ -205,6 +210,11 @@
      * Handle line export to image
      */
     function handleExport(lineIndex) {
+        // Prevent double downloads
+        if (isDownloading) {
+            return;
+        }
+
         const lineGroup = document.querySelectorAll('.lyrics-line-group:not(.is-empty-line)')[lineIndex];
 
         if (!lineGroup) {
@@ -219,8 +229,16 @@
         // Line number starts from 1 (not 0)
         const lineNumber = parseInt(lineIndex) + 1;
 
+        // Set downloading flag
+        isDownloading = true;
+
         // Generate image with line number for filename
         generateLineImage(originalText, translationText, activeLang, lineNumber);
+
+        // Reset flag after a short delay
+        setTimeout(() => {
+            isDownloading = false;
+        }, 1000);
     }
 
     /**
