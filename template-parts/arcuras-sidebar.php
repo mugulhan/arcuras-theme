@@ -177,44 +177,6 @@ if ( $lyrics_page_by_path ) {
                 </a>
             </li>
 
-            <?php // Languages Section (Dropdown Menu) ?>
-            <li>
-                <button class="w-full flex items-center justify-between px-3 py-2 rounded-md transition-colors duration-200 <?php echo "{$inactive_text_color} {$inactive_hover_text_color} {$inactive_hover_bg_color}"; ?>" onclick="toggleSubmenu('languages-submenu')" aria-controls="languages-submenu" aria-expanded="false">
-                    <div class="flex items-center">
-                        <?php gufte_icon('translate', 'mr-3 w-5 h-5'); ?>
-                        <?php esc_html_e('Languages', 'gufte'); ?>
-                    </div>
-                    <?php gufte_icon('chevron-down', 'submenu-icon transform transition-transform duration-200 w-5 h-5'); ?>
-                </button>
-
-                <ul id="languages-submenu" class="pl-6 mt-1 space-y-1 hidden">
-                    <li>
-                        <a href="<?php echo esc_url(home_url('/original/english/')); ?>" class="flex items-center text-sm py-1.5 rounded-md transition-colors duration-200 group text-gray-600 <?php echo $inactive_hover_text_color . ' ' . $inactive_hover_bg_color; ?>">
-                            <?php gufte_icon("circle-medium", "mr-3 w-3 h-3 transition-colors duration-200 text-gray-400 group-hover:text-accent-500"); ?>
-                            <span class="flex-grow"><?php esc_html_e('English (Original)', 'gufte'); ?></span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo esc_url(home_url('/original/turkish/')); ?>" class="flex items-center text-sm py-1.5 rounded-md transition-colors duration-200 group text-gray-600 <?php echo $inactive_hover_text_color . ' ' . $inactive_hover_bg_color; ?>">
-                            <?php gufte_icon("circle-medium", "mr-3 w-3 h-3 transition-colors duration-200 text-gray-400 group-hover:text-accent-500"); ?>
-                            <span class="flex-grow"><?php esc_html_e('Turkish (Original)', 'gufte'); ?></span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo esc_url(home_url('/translation/english/')); ?>" class="flex items-center text-sm py-1.5 rounded-md transition-colors duration-200 group text-gray-600 <?php echo $inactive_hover_text_color . ' ' . $inactive_hover_bg_color; ?>">
-                            <?php gufte_icon("circle-medium", "mr-3 w-3 h-3 transition-colors duration-200 text-gray-400 group-hover:text-accent-500"); ?>
-                            <span class="flex-grow"><?php esc_html_e('English (Translations)', 'gufte'); ?></span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo esc_url(home_url('/translation/turkish/')); ?>" class="flex items-center text-sm py-1.5 rounded-md transition-colors duration-200 group text-gray-600 <?php echo $inactive_hover_text_color . ' ' . $inactive_hover_bg_color; ?>">
-                            <?php gufte_icon("circle-medium", "mr-3 w-3 h-3 transition-colors duration-200 text-gray-400 group-hover:text-accent-500"); ?>
-                            <span class="flex-grow"><?php esc_html_e('Turkish (Translations)', 'gufte'); ?></span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
             <?php // --- Conditional Links for Logged-in Users --- ?>
             <?php if ( is_user_logged_in() ) : ?>
 
