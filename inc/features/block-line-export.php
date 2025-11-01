@@ -34,11 +34,16 @@ function arcuras_enqueue_line_export_assets() {
 
     // Pass PHP data to JavaScript (must be after register, before enqueue)
     $featured_image = get_the_post_thumbnail_url(get_the_ID(), 'medium');
+
+    // Get singer/artist name from taxonomy
+    $singers = wp_get_post_terms(get_the_ID(), 'singer', array('fields' => 'names'));
+    $artist_name = !empty($singers) ? $singers[0] : '';
+
     wp_localize_script('arcuras-line-export', 'arcurasLineExport', array(
         'siteUrl' => get_site_url(),
         'siteName' => get_bloginfo('name'),
         'postTitle' => get_the_title(),
-        'postAuthor' => get_post_meta(get_the_ID(), '_artist_name', true),
+        'artistName' => $artist_name,
         'featuredImage' => $featured_image ? $featured_image : '',
         'nonce' => wp_create_nonce('wp_rest'),
         'isUserLoggedIn' => is_user_logged_in(),

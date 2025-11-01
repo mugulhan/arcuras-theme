@@ -418,7 +418,18 @@
         }
 
         function drawRestOfImage() {
-            // Add song title (below album cover with more spacing)
+            let titleYPosition = topSectionY + 160;
+
+            // Add artist name (below album cover, smaller and lighter)
+            if (arcurasLineExport.artistName) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.font = '500 28px Inter, -apple-system, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(arcurasLineExport.artistName, width / 2, topSectionY + 140);
+                titleYPosition = topSectionY + 185; // Move title down
+            }
+
+            // Add song title (below artist name or album cover)
             if (arcurasLineExport.postTitle) {
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
                 ctx.font = '600 36px Inter, -apple-system, sans-serif';
@@ -429,9 +440,9 @@
                 const titleMetrics = ctx.measureText(arcurasLineExport.postTitle);
 
                 if (titleMetrics.width > maxTitleWidth) {
-                    wrapText(ctx, arcurasLineExport.postTitle, width / 2, topSectionY + 160, maxTitleWidth, 45);
+                    wrapText(ctx, arcurasLineExport.postTitle, width / 2, titleYPosition, maxTitleWidth, 45);
                 } else {
-                    ctx.fillText(arcurasLineExport.postTitle, width / 2, topSectionY + 160);
+                    ctx.fillText(arcurasLineExport.postTitle, width / 2, titleYPosition);
                 }
             }
 
