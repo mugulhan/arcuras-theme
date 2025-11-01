@@ -12847,3 +12847,24 @@ function gufte_set_lyrics_posts_per_page($query) {
     }
 }
 
+
+/**
+ * GitHub Theme Update Checker
+ * Enables automatic updates from GitHub releases
+ * 
+ * @since 2.11.0
+ */
+require get_template_directory() . '/inc/plugin-update-checker/plugin-update-checker.php';
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+$arcurasUpdateChecker = PucFactory::buildUpdateChecker(
+    'https://github.com/mugulhan/arcuras-theme/',
+    __FILE__,
+    'arcuras'
+);
+
+// Set the branch to track for updates (main branch)
+$arcurasUpdateChecker->setBranch('main');
+
+// Optional: Enable release assets (if you want to use GitHub releases instead of branch)
+$arcurasUpdateChecker->getVcsApi()->enableReleaseAssets();
