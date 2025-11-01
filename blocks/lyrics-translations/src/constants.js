@@ -34,7 +34,8 @@ export const AVAILABLE_LANGUAGES = [
 	{ value: 'az', label: 'Azerbaijani (Azərbaycan)' },
 	{ value: 'kk', label: 'Kazakh (Қазақша)' },
 	{ value: 'alt', label: 'Altai (Алтай тил)' },
-	{ value: 'mn', label: 'Mongolian (Монгол)' }
+	{ value: 'mn', label: 'Mongolian (Монгол)' },
+	{ value: 'cv', label: 'Chuvash (Чӑвашла)' }
 ];
 
 /**
@@ -238,6 +239,12 @@ export const SEO_DATA = {
 		meta_suffix: 'Дууны үг уншиж, олон хэл дээрх орчуулга олж, дэлгэрэнгүй тайлбар судлаарай',
 		translation_suffix: 'Дууны үг, монгол орчуулга ба тайлбар',
 		translation_meta_suffix: 'Эх үг болон дэлгэрэнгүй тайлбартай монгол орчуулгыг уншина уу'
+	},
+	cv: {
+		original_suffix: 'Юрă сăмахĕсем, Куҫарусем тата Ăнлантарусем',
+		meta_suffix: 'Юрă сăмахĕсене вулăр, нумай чĕлхепе куҫарусене тупăр тата тĕплĕнрех ăнлантарусене пĕлĕр',
+		translation_suffix: 'Юрă сăмахĕсем, Чӑвашла куҫару тата Ăнлантарусем',
+		translation_meta_suffix: 'Чӑваш чĕлхине куҫарнă текста тĕп сăмахĕсемпе тата тĕплĕнрех ăнлантарусемпе пĕрле вулăр'
 	}
 };
 

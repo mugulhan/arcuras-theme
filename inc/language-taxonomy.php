@@ -368,6 +368,13 @@ function arcuras_get_language_term_data() {
             'flag' => '🇲🇳',
             'iso_code' => 'mn'
         ),
+        'chuvash' => array(
+            'name' => 'Chuvash',
+            'slug' => 'chuvash',
+            'description' => 'Chuvash language lyrics and translations',
+            'flag' => '🏴',
+            'iso_code' => 'cv'
+        ),
     );
 
     // Get custom languages from database
