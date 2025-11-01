@@ -216,8 +216,11 @@
         const translationText = lineGroup.querySelector('.translation-line:not([style*="display: none"]) .lyrics-line-text')?.textContent || '';
         const activeLang = document.querySelector('.lang-button.active')?.textContent?.trim() || '';
 
-        // Generate image
-        generateLineImage(originalText, translationText, activeLang);
+        // Line number starts from 1 (not 0)
+        const lineNumber = parseInt(lineIndex) + 1;
+
+        // Generate image with line number for filename
+        generateLineImage(originalText, translationText, activeLang, lineNumber);
     }
 
     /**
@@ -325,7 +328,7 @@
     /**
      * Generate and download line image using canvas
      */
-    function generateLineImage(originalText, translationText, language) {
+    function generateLineImage(originalText, translationText, language, lineNumber) {
         if (!canvas) {
             return;
         }
@@ -441,7 +444,27 @@
             // Download image after everything is drawn
             setTimeout(() => {
                 const link = document.createElement('a');
-                const filename = 'lyrics-' + Date.now() + '.png';
+
+                // Create filename: songTitle-line-01.png
+                let filename = 'lyrics';
+                if (arcurasLineExport.postTitle) {
+                    // Clean title for filename (remove special chars, limit length)
+                    const cleanTitle = arcurasLineExport.postTitle
+                        .toLowerCase()
+                        .replace(/[^a-z0-9\s-]/g, '')
+                        .replace(/\s+/g, '-')
+                        .substring(0, 30);
+                    filename = cleanTitle;
+                }
+
+                // Add line number with leading zero (01, 02, 03, etc.)
+                if (lineNumber) {
+                    const formattedNumber = lineNumber.toString().padStart(2, '0');
+                    filename += '-line-' + formattedNumber;
+                }
+
+                filename += '.png';
+
                 link.download = filename;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
