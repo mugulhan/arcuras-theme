@@ -74,19 +74,24 @@ ${CHANGELOG_ENTRY}
 echo -e "${GREEN}✅ style.css updated${NC}"
 
 echo ""
-echo -e "${BLUE}🔄 Step 2/6: Updating version in package.json...${NC}"
+echo -e "${BLUE}🔄 Step 2/8: Updating GUFTE_VERSION in functions.php...${NC}"
+sed -i '' "s/define('GUFTE_VERSION', '${CURRENT_VERSION}')/define('GUFTE_VERSION', '${NEW_VERSION}')/" functions.php
+echo -e "${GREEN}✅ functions.php updated${NC}"
+
+echo ""
+echo -e "${BLUE}🔄 Step 3/8: Updating version in package.json...${NC}"
 sed -i '' "s/\"version\": \"${CURRENT_VERSION}\"/\"version\": \"${NEW_VERSION}\"/" blocks/lyrics-translations/package.json
 echo -e "${GREEN}✅ package.json updated${NC}"
 
 echo ""
-echo -e "${BLUE}🔄 Step 3/6: Building block...${NC}"
+echo -e "${BLUE}🔄 Step 4/8: Building block...${NC}"
 cd blocks/lyrics-translations
 npm run build
 cd ../..
 echo -e "${GREEN}✅ Block built successfully${NC}"
 
 echo ""
-echo -e "${BLUE}🔄 Step 4/6: Committing to git...${NC}"
+echo -e "${BLUE}🔄 Step 5/8: Committing to git...${NC}"
 git add -A
 git commit -m "v${NEW_VERSION} - ${CHANGELOG_TITLE}
 
@@ -97,12 +102,12 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 echo -e "${GREEN}✅ Changes committed${NC}"
 
 echo ""
-echo -e "${BLUE}🔄 Step 5/6: Pushing to GitHub...${NC}"
+echo -e "${BLUE}🔄 Step 6/8: Pushing to GitHub...${NC}"
 git push origin main
 echo -e "${GREEN}✅ Pushed to GitHub${NC}"
 
 echo ""
-echo -e "${BLUE}🔄 Step 6/8: Creating theme zip package...${NC}"
+echo -e "${BLUE}🔄 Step 7/8: Creating theme zip package...${NC}"
 cd ..
 rm -f arcuras.zip arcuras-v${NEW_VERSION}.zip
 zip -r arcuras-v${NEW_VERSION}.zip arcuras \
@@ -120,7 +125,7 @@ cd arcuras
 echo -e "${GREEN}✅ Theme zip created ($(du -h ../arcuras.zip | cut -f1))${NC}"
 
 echo ""
-echo -e "${BLUE}🔄 Step 7/8: Creating GitHub release...${NC}"
+echo -e "${BLUE}🔄 Step 8/9: Creating GitHub release...${NC}"
 gh release create "v${NEW_VERSION}" \
     --title "v${NEW_VERSION} - ${CHANGELOG_TITLE}" \
     --notes "**${CHANGELOG_TITLE}**
@@ -133,7 +138,7 @@ Download \`arcuras.zip\` and upload to WordPress via Appearance > Themes > Add N
 echo -e "${GREEN}✅ GitHub release created${NC}"
 
 echo ""
-echo -e "${BLUE}🔄 Step 8/8: Uploading theme zip to release...${NC}"
+echo -e "${BLUE}🔄 Step 9/9: Uploading theme zip to release...${NC}"
 gh release upload "v${NEW_VERSION}" ../arcuras.zip ../arcuras-v${NEW_VERSION}.zip --clobber
 echo -e "${GREEN}✅ Theme zip uploaded to release${NC}"
 
