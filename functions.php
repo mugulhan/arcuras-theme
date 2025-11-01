@@ -146,7 +146,7 @@ add_filter('wp_sitemaps_enabled', '__return_false', 99);
 /**
  * Define constants
  */
-define('GUFTE_VERSION', '2.13.8');
+define('GUFTE_VERSION', '2.13.9');
 define('GUFTE_DIR', get_template_directory());
 
 // ngrok modunda URI'yi düzelt
@@ -12864,8 +12864,5 @@ $arcurasUpdateChecker = PucFactory::buildUpdateChecker(
     'arcuras'
 );
 
-// Set the branch to track for updates (main branch)
-$arcurasUpdateChecker->setBranch('main');
-
-// Optional: Enable release assets (if you want to use GitHub releases instead of branch)
+// Enable release assets - use GitHub releases instead of branch
 $arcurasUpdateChecker->getVcsApi()->enableReleaseAssets();
