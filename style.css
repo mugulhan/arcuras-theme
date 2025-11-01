@@ -4,7 +4,7 @@ Theme URI: https://arcuras.com
 Author: Mudos Digital
 Author URI: https://mudosdigital.com/
 Description: A modern, high-performance WordPress theme with multilingual support (Turkish/English), user-based language preferences, and optimized inline SVG icons. Performance Score: 85/100 (Lighthouse).
-Version: 2.13.4
+Version: 2.13.5
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -18,6 +18,11 @@ This theme, like WordPress, is licensed under the GPL.
 Use it to make something cool, have fun, and share what you've learned.
 
 Changelog:
+v2.13.5 - Cache Busting Fix:
+- Updated GUFTE_VERSION to match theme version (2.13.4 -> 2.13.5)
+- Fixes browser cache issue preventing JS updates from loading
+- Ensures line-export.js double download fix works correctly
+
 v2.13.4 - Fix Double Download Issue:
 - Fixed double download bug in line export
 - Added download prevention mechanism with cooldown
