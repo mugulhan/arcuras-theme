@@ -1,0 +1,74 @@
+<?php
+/**
+ * Block-Based Lyric Line Export Feature
+ *
+ * Provides per-line image export functionality for the new Gutenberg block system
+ * with kebab menu dropdowns and canvas-based image generation
+ *
+ * @package Gufte
+ * @since 1.9.3
+ */
+
+// Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * Enqueue necessary scripts and styles for line export feature
+ */
+function arcuras_enqueue_line_export_assets() {
+    // Only load on single lyrics posts
+    if (!is_singular('lyrics')) {
+        return;
+    }
+
+    // Register the frontend JavaScript first
+    wp_register_script(
+        'arcuras-line-export',
+        get_template_directory_uri() . '/assets/js/line-export.js',
+        array(),
+        GUFTE_VERSION,
+        true
+    );
+
+    // Pass PHP data to JavaScript (must be after register, before enqueue)
+    $featured_image = get_the_post_thumbnail_url(get_the_ID(), 'medium');
+    wp_localize_script('arcuras-line-export', 'arcurasLineExport', array(
+        'siteUrl' => get_site_url(),
+        'siteName' => get_bloginfo('name'),
+        'postTitle' => get_the_title(),
+        'postAuthor' => get_post_meta(get_the_ID(), '_artist_name', true),
+        'featuredImage' => $featured_image ? $featured_image : '',
+        'nonce' => wp_create_nonce('wp_rest'),
+        'isUserLoggedIn' => is_user_logged_in(),
+    ));
+
+    // Now enqueue it
+    wp_enqueue_script('arcuras-line-export');
+
+    // Enqueue the CSS
+    wp_enqueue_style(
+        'arcuras-line-export',
+        get_template_directory_uri() . '/assets/css/line-export.css',
+        array(),
+        GUFTE_VERSION
+    );
+
+    // Enqueue Music Video Modal assets
+    wp_enqueue_script(
+        'arcuras-music-video-modal',
+        get_template_directory_uri() . '/assets/js/music-video-modal.js',
+        array(),
+        GUFTE_VERSION,
+        true
+    );
+
+    wp_enqueue_style(
+        'arcuras-music-video-modal',
+        get_template_directory_uri() . '/assets/css/music-video-modal.css',
+        array(),
+        GUFTE_VERSION
+    );
+}
+add_action('wp_enqueue_scripts', 'arcuras_enqueue_line_export_assets');

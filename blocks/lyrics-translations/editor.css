@@ -1,0 +1,201 @@
+/**
+ * Lyrics & Translations Block - Editor Styles
+ */
+
+.lyrics-block-wrapper {
+	margin: 20px 0;
+}
+
+.lyrics-translations-editor {
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	background: white;
+	overflow: hidden;
+}
+
+.block-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 16px 20px;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+}
+
+.block-header .block-icon {
+	flex-shrink: 0;
+}
+
+.block-header h3 {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.language-selector-wrapper {
+	padding: 16px 20px;
+	background: #f7fafc;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+/* ComboboxControl full width styling */
+.language-selector-wrapper .components-combobox-control {
+	width: 100%;
+	max-width: 100%;
+}
+
+.language-selector-wrapper .components-base-control__field {
+	margin-bottom: 0;
+}
+
+.language-selector-wrapper .components-base-control__help {
+	font-size: 12px;
+	color: #757575;
+	margin-top: 8px;
+}
+
+.lyrics-tab-panel {
+	padding: 0;
+}
+
+.lyrics-tab-panel .components-tab-panel__tabs {
+	display: flex;
+	gap: 4px;
+	padding: 12px 20px;
+	background: #f7fafc;
+	border-bottom: 1px solid #e2e8f0;
+	overflow-x: auto;
+}
+
+.lyrics-tab-panel .components-tab-panel__tabs-item {
+	padding: 8px 16px;
+	border: none;
+	border-radius: 6px;
+	background: transparent;
+	color: #4a5568;
+	font-weight: 500;
+	font-size: 13px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	white-space: nowrap;
+}
+
+.lyrics-tab-panel .components-tab-panel__tabs-item:hover {
+	background: rgba(102, 126, 234, 0.1);
+	color: #667eea;
+}
+
+.lyrics-tab-panel .components-tab-panel__tabs-item.is-active {
+	background: #667eea;
+	color: white;
+	font-weight: 600;
+}
+
+.lyrics-tab-content {
+	padding: 20px;
+}
+
+.language-settings {
+	margin-bottom: 20px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+.language-settings .components-base-control {
+	margin-bottom: 16px;
+}
+
+/* Fix ComboboxControl width in language settings */
+.language-settings .components-combobox-control {
+	width: 100% !important;
+	max-width: 100% !important;
+}
+
+.language-settings .components-combobox-control__input {
+	width: 100% !important;
+}
+
+.lyrics-textarea textarea {
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.section-markers-help {
+	margin: 12px 0;
+	padding: 12px;
+	background: #f0f7ff;
+	border: 1px solid #667eea;
+	border-radius: 6px;
+	font-size: 13px;
+	color: #4a5568;
+}
+
+.section-markers-help strong {
+	color: #667eea;
+	font-size: 14px;
+}
+
+.section-markers-help code {
+	background: white;
+	padding: 2px 6px;
+	border-radius: 3px;
+	font-size: 12px;
+	color: #667eea;
+	border: 1px solid #e2e8f0;
+	font-family: 'Courier New', Courier, monospace;
+}
+
+.section-markers-help small {
+	color: #718096;
+	font-style: italic;
+}
+
+.lyrics-stats {
+	margin-top: 8px;
+	padding: 8px 12px;
+	background: #f7fafc;
+	border-radius: 4px;
+	font-size: 12px;
+	color: #4a5568;
+	text-align: right;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 4px;
+}
+
+.lyrics-stats .stat-item {
+	font-weight: 500;
+}
+
+.lyrics-stats .stat-separator {
+	color: #cbd5e0;
+	font-weight: 300;
+}
+
+/* Numbered Textarea spacing */
+.numbered-textarea-control {
+	margin-top: 16px !important;
+}
+
+/* Hide scrollbar for line numbers */
+.line-numbers::-webkit-scrollbar {
+	display: none;
+}
+
+.line-numbers {
+	-ms-overflow-style: none;  /* IE and Edge */
+	scrollbar-width: none;  /* Firefox */
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+	.lyrics-tab-content {
+		padding: 16px;
+	}
+
+	.language-selector-wrapper {
+		padding: 12px 16px;
+	}
+}

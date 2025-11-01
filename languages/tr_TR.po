@@ -1,0 +1,243 @@
+# Translation file for Gufte Theme
+# Copyright (C) 2025
+# This file is distributed under the same license as the Gufte package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Gufte Theme 1.4.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-11 23:00:00+0000\n"
+"PO-Revision-Date: 2025-10-11 23:00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+# Sidebar Menu Items
+msgid "Sidebar Menu"
+msgstr "Kenar Menüsü"
+
+msgid "Menu"
+msgstr "Menü"
+
+msgid "Home"
+msgstr "Ana Sayfa"
+
+msgid "Lyrics"
+msgstr "Şarkı Sözleri"
+
+msgid "Singers"
+msgstr "Şarkıcılar"
+
+msgid "Songwriters"
+msgstr "Söz Yazarları"
+
+msgid "Producers"
+msgstr "Prodüktörler"
+
+msgid "Albums"
+msgstr "Albümler"
+
+msgid "Categories"
+msgstr "Kategoriler"
+
+msgid "All Categories"
+msgstr "Tüm Kategoriler"
+
+msgid "Latest Added"
+msgstr "Son Eklenenler"
+
+msgid "Popular Lyrics"
+msgstr "Popüler Şarkılar"
+
+msgid "Recently Viewed"
+msgstr "Son Görüntülenenler"
+
+msgid "My Profile"
+msgstr "Profilim"
+
+# Search Section
+msgid "Search Songs"
+msgstr "Şarkı Ara"
+
+msgid "Song, singer..."
+msgstr "Şarkı, şarkıcı..."
+
+msgid "Search"
+msgstr "Ara"
+
+# Tags Section
+msgid "Popular Tags"
+msgstr "Popüler Etiketler"
+
+msgid "All"
+msgstr "Tümü"
+
+msgid "View All Tags"
+msgstr "Tüm Etiketleri Görüntüle"
+
+# Footer
+msgid "All rights reserved."
+msgstr "Tüm hakları saklıdır."
+
+# Profile Page
+msgid "Personal Information"
+msgstr "Kişisel Bilgiler"
+
+msgid "First Name"
+msgstr "Ad"
+
+msgid "Last Name"
+msgstr "Soyad"
+
+msgid "Username"
+msgstr "Kullanıcı Adı"
+
+msgid "Username cannot be changed."
+msgstr "Kullanıcı adı değiştirilemez."
+
+msgid "Nickname"
+msgstr "Takma Ad"
+
+msgid "This field is required."
+msgstr "Bu alan zorunludur."
+
+msgid "Display Name"
+msgstr "Görünen Ad"
+
+msgid "Choose how your name appears publicly."
+msgstr "Adınızın halka açık olarak nasıl görüneceğini seçin."
+
+msgid "Email Address"
+msgstr "E-posta Adresi"
+
+msgid "Website"
+msgstr "Web Sitesi"
+
+msgid "Biographical Info"
+msgstr "Biyografi"
+
+msgid "Tell us a bit about yourself..."
+msgstr "Kendiniz hakkında biraz bilgi verin..."
+
+msgid "Share some information about yourself. This may be shown publicly."
+msgstr "Kendiniz hakkında bilgi paylaşın. Bu bilgiler herkese açık olabilir."
+
+msgid "Language Preference"
+msgstr "Dil Tercihi"
+
+msgid "Select your preferred language for the site interface."
+msgstr "Site arayüzü için tercih ettiğiniz dili seçin."
+
+msgid "Change Password"
+msgstr "Şifre Değiştir"
+
+msgid "Leave these fields blank if you do not want to change your password."
+msgstr "Şifrenizi değiştirmek istemiyorsanız bu alanları boş bırakın."
+
+msgid "New Password"
+msgstr "Yeni Şifre"
+
+msgid "Confirm New Password"
+msgstr "Yeni Şifreyi Onayla"
+
+msgid "Make sure to save your changes before leaving this page."
+msgstr "Bu sayfadan ayrılmadan önce değişikliklerinizi kaydettiğinizden emin olun."
+
+msgid "Cancel"
+msgstr "İptal"
+
+msgid "Save Changes"
+msgstr "Değişiklikleri Kaydet"
+
+msgid "Profile updated successfully!"
+msgstr "Profil başarıyla güncellendi!"
+
+msgid "Posts Published"
+msgstr "Yayınlanan Yazılar"
+
+msgid "Member Since"
+msgstr "Üyelik Süresi"
+
+msgid "User Role"
+msgstr "Kullanıcı Rolü"
+
+msgid "Change your avatar at %s"
+msgstr "Avatarınızı %s adresinden değiştirebilirsiniz"
+
+msgid "Manage your account settings and profile information."
+msgstr "Hesap ayarlarınızı ve profil bilgilerinizi yönetin."
+
+# Header & Navigation
+msgid "Skip to content"
+msgstr "İçeriğe atla"
+
+msgctxt "search placeholder"
+msgid "Search for a song lyric, album or artist..."
+msgstr "Şarkı sözü, albüm veya sanatçı ara..."
+
+msgctxt "search placeholder"
+msgid "Search..."
+msgstr "Ara..."
+
+msgid "Recent Searches"
+msgstr "Son Aramalar"
+
+msgid "Recent Visits"
+msgstr "Son Ziyaretler"
+
+msgid "Add New Lyrics"
+msgstr "Yeni Şarkı Sözü Ekle"
+
+msgid "Edit Profile"
+msgstr "Profili Düzenle"
+
+msgid "Dashboard"
+msgstr "Kontrol Paneli"
+
+msgid "Log Out"
+msgstr "Çıkış Yap"
+
+msgid "Login"
+msgstr "Giriş Yap"
+
+# Mobile Menu
+msgid "Main Menu"
+msgstr "Ana Menü"
+
+msgid "Latest Translations"
+msgstr "Son Çeviriler"
+
+msgid "Language Categories"
+msgstr "Dil Kategorileri"
+
+msgid "Popular Singers"
+msgstr "Popüler Şarkıcılar"
+
+# Hero Section
+msgid "Welcome to Güfte"
+msgstr "Güfte'ye Hoş Geldiniz"
+
+msgid "A modern WordPress theme built with Tailwind CSS"
+msgstr "Tailwind CSS ile oluşturulmuş modern bir WordPress teması"
+
+msgid "Explore"
+msgstr "Keşfet"
+
+# User Roles
+msgid "Administrator"
+msgstr "Yönetici"
+
+msgid "Editor"
+msgstr "Editör"
+
+msgid "Author"
+msgstr "Yazar"
+
+msgid "Contributor"
+msgstr "Katkıda Bulunan"
+
+msgid "Subscriber"
+msgstr "Abone"

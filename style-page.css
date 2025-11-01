@@ -1,0 +1,164 @@
+/**
+ * Page-specific styles for Arcuras Theme
+ */
+
+/* Page layout */
+.page .site-main {
+    padding-top: 3rem;
+    padding-bottom: 4rem;
+}
+
+/* Page header */
+.page .entry-title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    margin-bottom: 2rem;
+    color: #0c4a6e; /* primary-900 equivalent */
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.page .entry-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 4px;
+    width: 80px;
+    background: linear-gradient(90deg, #0ea5e9, #7dd3fc); /* primary colors */
+    border-radius: 2px;
+}
+
+/* Page content */
+.page .entry-content {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: #374151; /* gray-700 equivalent */
+}
+
+.page .entry-content p {
+    margin-bottom: 1.5rem;
+}
+
+.page .entry-content h2 {
+    font-size: 1.875rem;
+    color: #0c4a6e; /* primary-900 equivalent */
+    margin-top: 2.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.page .entry-content h3 {
+    font-size: 1.5rem;
+    color: #0c4a6e; /* primary-900 equivalent */
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.page .entry-content ul,
+.page .entry-content ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+}
+
+.page .entry-content li {
+    margin-bottom: 0.5rem;
+}
+
+.page .entry-content blockquote {
+    border-left: 4px solid #0ea5e9; /* primary-500 */
+    padding-left: 1.5rem;
+    font-style: italic;
+    color: #4b5563; /* gray-600 */
+    margin: 2rem 0;
+}
+
+/* Table styles */
+.page .entry-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+}
+
+.page .entry-content th {
+    background-color: #f0f9ff; /* primary-50 */
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 2px solid #0ea5e9; /* primary-500 */
+}
+
+.page .entry-content td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e0f2fe; /* primary-100 */
+}
+
+.page .entry-content tr:hover {
+    background-color: #f0f9ff; /* primary-50 */
+}
+
+/* Terms & Privacy specific styles */
+.page.privacy-policy h2,
+.page.terms-service h2 {
+    font-size: 1.75rem;
+    border-bottom: 1px solid #e0f2fe; /* primary-100 */
+    padding-bottom: 0.5rem;
+}
+
+.page.privacy-policy h3,
+.page.terms-service h3 {
+    font-size: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+    .page .entry-title {
+        font-size: 2rem;
+    }
+    
+    .page .entry-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .page .entry-content h3 {
+        font-size: 1.25rem;
+    }
+}
+
+/* Add page thumbnail styles */
+.page .post-thumbnail {
+    margin-bottom: 2rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(5, 5, 90, 0.03);
+}
+
+.page .post-thumbnail img {
+    transition: transform 0.5s ease;
+}
+
+.page .post-thumbnail:hover img {
+    transform: scale(1.02);
+}
+
+/* Print styles */
+@media print {
+    .page .site-main {
+        padding: 0;
+    }
+    
+    .page .entry-title::after {
+        display: none;
+    }
+    
+    .page .entry-content {
+        font-size: 12pt;
+        line-height: 1.5;
+    }
+    
+    .site-header, 
+    .site-footer,
+    .entry-footer {
+        display: none;
+    }
+}

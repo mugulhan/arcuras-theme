@@ -1,0 +1,683 @@
+/*!
+Theme Name: Arcuras
+Theme URI: https://arcuras.com
+Author: Mudos Digital
+Author URI: https://mudosdigital.com/
+Description: A modern, high-performance WordPress theme with multilingual support (Turkish/English), user-based language preferences, and optimized inline SVG icons. Performance Score: 85/100 (Lighthouse).
+Version: 2.11.0
+Requires at least: 6.0
+Tested up to: 6.7
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: LICENSE
+Text Domain: gufte
+Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready, blog, responsive, tailwind, modern, multilingual, i18n, performance, optimized
+
+This theme, like WordPress, is licensed under the GPL.
+Use it to make something cool, have fun, and share what you've learned.
+
+Changelog:
+v2.11.0 - Dynamic SEO & Multiple Original Languages:
+- Added REST API endpoint for dynamic language SEO settings
+- Block editor now fetches SEO settings from database in real-time
+- Translation SEO preview now shows custom translation suffixes from admin dashboard
+- Support for multiple original languages (bilingual songs)
+- Toggle system for marking multiple languages as original
+- Frontend displays all original languages with "Original" badge
+- SEO uses first original language for meta tags
+- Removed Groq API warning (replaced with generic AI message)
+- Added "Manage Languages" admin page with ISO 639-1 searchable dropdown
+- Languages can be added from dashboard without editing code
+- Split SEO form into Original Language SEO and Translation Language SEO sections
+- Modernized block language selector with searchable ComboboxControl
+- Fixed SEO preview to show database values instead of hardcoded constants
+
+v2.10.0 - Gemini-Powered AI Translation:
+- Switched AI translation from Groq/DeepSeek to Google Gemini
+- Unified API key: Same Gemini key for both OCR and translation
+- Added Gemini model selection: 2.0 Flash, 1.5 Pro, 1.5 Flash
+- Improved translation quality with Gemini's advanced language models
+- Removed Groq and DeepSeek API dependencies
+- Simplified configuration: One API key for all AI features
+
+v2.9.0 - Language Taxonomy SEO & Bashkir Support:
+- Added Bashkir language support (Башҡорт теле)
+- Added custom SEO title and description fields for language taxonomies
+- Language taxonomy pages now support custom meta tags
+- Added SEO columns in language taxonomy admin list
+- Auto-apply custom SEO to original_language and translated_language pages
+- Support for Yoast SEO integration with custom meta
+- Bashkir OCR support with Cyrillic fallback
+
+v2.8.0 - AI-Powered OCR & Vision:
+- Added Google Gemini Vision API integration for OCR
+- AI-powered lyrics extraction from images (Gemini 2.0 Flash)
+- Toggle to switch between AI OCR and Tesseract
+- Support for all languages with high accuracy
+- Better text extraction quality for complex layouts
+- Added Gemini API key settings field
+
+v2.7.0 - AI Translation & Settings Enhancements:
+- Added AI-powered translation feature for lyrics (Groq & DeepSeek support)
+- Added custom translation instructions for better quality
+- Added AI model selection (5 different models)
+- Created dedicated AI Translation settings tab
+- Display current AI model in block editor
+- Improved lyrics textarea spacing
+- Enhanced translation prompt engineering for better results
+
+v2.6.2 - Archive & Search Page Enhancements:
+  * NEW: Original language and translations display in archive page cards (lyrics archive)
+  * NEW: Original language and translations display in search/genre filter page cards
+  * NEW: Clean SVG icons replace flag emojis - file-document for original, translate for translations
+  * UI: Changed default posts per page from 24 to 17 for lyrics archive
+  * UI: Genre/search page cards now use 1:1 aspect ratio (square) instead of fixed height
+  * UI: Genre/search page grid changed to 5 columns on desktop (2-3-4-5-6 responsive)
+  * UI: Dropdown menus for translations work consistently across all archive pages
+  * PERFORMANCE: Uses gufte_icon() function for inline SVG icons (no external requests)
+
+v2.6.1 - Language Taxonomy Archive Improvements:
+  * FIXED: Taxonomy template files renamed to use underscores (taxonomy_original_language.php, taxonomy_translated_language.php)
+  * FIXED: Removed localStorage auto-redirect behavior that was causing unwanted translation redirects
+  * NEW: Dropdown menus for translations/originals in language taxonomy archive cards
+  * NEW: Cleaner labeling - "+X Other Translation(s)" and direct original language display
+  * UI: 6-column responsive grid layout for language taxonomy archives
+  * UI: Removed flag emojis from hero titles for cleaner look
+  * UI: Differentiated descriptions between original and translation category pages
+  * BUGFIX: Fixed URL generation - changed 'code' to 'iso_code' for proper language code mapping
+  * BUGFIX: Fixed double slash issue in translation URLs
+
+v2.6.0 - MAJOR UPDATE - Genre Cards & Performance Optimization:
+  * NEW: Animated genre cards with featured image collage backgrounds
+  * NEW: Genre filtering system - Browse lyrics by music genre
+  * NEW: 8 beautiful gradient color schemes with neon effects
+  * NEW: Smart caching system for genre images (1-hour transient cache)
+  * PERFORMANCE: Reduced database queries by 30% (70 vs 100+)
+  * PERFORMANCE: Optimized slider posts (9 sliders × 5 posts = 45 queries)
+  * PERFORMANCE: Genre images reduced to 3 per card (8 genres × 3 = 24 images)
+  * UI: Genre cards with glassmorphism and backdrop blur effects
+  * UI: Portrait aspect ratio (2:3) for better mobile/desktop display
+  * UI: Line count displayed in search results instead of publish date
+  * UI: Dynamic genre title in search results ("Pop Lyrics", "Rock Lyrics", etc.)
+  * FIX: Genre URL filtering now works correctly with meta-based genres
+  * RESPONSIVE: Optimized card sizing - 4-6 cards visible on desktop
+  * QUALITY: Removed debug console logs from production
+
+v2.4.2 - CRITICAL FIX - Single Lyrics Footer Rendering:
+  * FIXED: Footer now properly renders on single lyrics pages - Corrected get_footer() PHP syntax
+  * FIXED: Removed inline function definitions from template file - Moved to functions.php
+  * REFACTOR: Post view counter (gufte_set_post_views) relocated to functions.php for proper hook execution
+  * REFACTOR: wp_head action hook for view tracking now properly registered in functions.php
+  * QUALITY: PHP syntax validation passed for both single-lyrics.php and functions.php
+  * IMPACT: Single lyrics pages no longer display raw PHP code instead of footer
+
+v2.4.1 - UX ENHANCEMENT - Paste with Line Breaks Preserved:
+  * FIXED: Paste functionality in lyrics textarea now preserves all line breaks and empty lines
+  * NEW: Custom onPaste handler that extracts plain text from clipboard without formatting loss
+  * NEW: Manual paste handling with cursor position preservation after paste
+  * IMPROVED: whiteSpace: 'pre-wrap' CSS ensures whitespace rendering in textarea
+  * UX: Users can now copy/paste lyrics with complex formatting including multiple empty lines
+  * TESTED: Verified with 65+ line breaks successfully preserved in single paste operation
+v2.4.0 - ADMIN DASHBOARD - SEO Settings Management & Editable Language Configurations:
+  * NEW: SEO Settings admin menu with 5 comprehensive pages (Overview, All Lyrics, Original Language SEO, Translation Language SEO, Missing SEO)
+  * NEW: Original Language SEO page - View and edit SEO title/description formats for original languages
+  * NEW: Translation Language SEO page - Manage SEO formats for translation languages separately
+  * NEW: Editable language SEO settings - Click "Edit" button to customize Title Suffix and Meta Description Suffix per language
+  * NEW: WordPress Thickbox modal integration - Native WordPress UI for editing language configurations
+  * NEW: AJAX-powered updates - Save SEO settings without page reload, stored in wp_options table
+  * NEW: Language code display - See ISO language codes (TR, EN, FR) alongside language names
+  * NEW: DataTables integration - Searchable, sortable tables with pagination for easy navigation
+  * NEW: Missing SEO Lyrics tracker - Identifies lyrics without original language defined with Edit/View actions
+  * NEW: Overview dashboard - Statistics cards showing Total Lyrics, Languages, SEO coverage percentage
+  * IMPROVED: Dynamic line numbering in lyrics block editor - Numbers update when blank lines are added
+  * IMPROVED: SEO data generation now prioritizes custom settings over defaults - Seamless fallback system
+  * UI: Modern Tailwind CSS design with monochrome palette - Consistent with WordPress admin aesthetics
+  * UI: Full-width responsive tables - Proper layout matching WordPress admin standards
+v2.3.0 - SEO ENHANCEMENT - Dynamic Multilingual SEO & Block Editor Improvements:
+  * NEW: Dynamic SEO titles based on song's original language - Turkish song shows Turkish title
+  * NEW: Real-time SEO preview in block editor - See title/meta description for each language tab
+  * NEW: 28-language SEO coverage - All supported languages have native original_suffix and meta_suffix
+  * IMPROVED: Meta descriptions extended to 150-160 characters for better SEO
+  * IMPROVED: Block editor language selector - Single atomic state update prevents race conditions
+  * FIXED: TabPanel force re-render when original language changes - SEO preview updates instantly
+  * FIXED: Language code/name synchronization - Both update simultaneously in single state change
+  * SEO: Original language detection from block attributes with fallback handling
+v2.2.9 - UX ENHANCEMENT - Section Comments & Fixed Line Numbers:
+  * NEW: Section Comments feature - Add explanatory notes to song sections (verses, choruses, etc.)
+  * NEW: Multi-language section comments - Each section can have different comments per language
+  * NEW: Frontend comment display with modal - Click 💬 badge to view section annotations
+  * NEW: Annotation count in stats bar - Shows total annotations for current language
+  * IMPROVED: Line numbers now use absolute positioning - Numbers stay fixed while scrolling
+  * IMPROVED: Section detection display in editor - Shows detected sections with line numbers
+  * FIXED: Line number calculation for section detection - Proper 0-based index matching
+  * UI: Decorative section headers on frontend with gradient dividers and badges
+v2.2.8 - SEO CRITICAL - Clean URLs Everywhere:
+  * FIXED: All canonical URLs now use clean URL structure (/lyrics/song/tr/) instead of query params (?lang=tr)
+  * FIXED: All hreflang URLs now use clean URL structure in multilingual-seo.php and seo-features.php
+  * RESOLVED: URL structure inconsistency - eliminated duplicate content risk from mixed URL formats
+  * SEO: Canonical and hreflang tags now fully compliant with Google best practices
+v2.2.7 - SEO FIX - Hreflang for English Original:
+  * FIXED: English (original) hreflang now points to base URL without /en/ suffix
+  * IMPROVED: Proper SEO implementation - original language doesn't get language code in URL
+  * COMPLIANT: Google hreflang best practices - x-default and en both point to same original URL
+v2.2.6 - CRITICAL FIX - Translation URLs on Live Site:
+  * FIXED: Sitemap generator now accepts both ISO codes ('en', 'es', 'tr') and full names ('english', 'spanish', 'turkish')
+  * FIXED: Translation URLs now appear in sitemap on live site (previously only worked on localhost)
+  * IMPROVED: Automatic conversion of ISO language codes to full names in get_post_languages()
+  * RESOLVED: Data format mismatch between database storage and sitemap expectations
+v2.2.5 - ADMIN FIX - Accurate URL Counts:
+  * FIXED: Lyrics count now includes translation URLs (base posts + /tr/, /es/ URLs)
+  * IMPROVED: Admin page accurately shows total sitemap URL count
+v2.2.4 - ADMIN IMPROVEMENTS - Sitemap Page Enhancements:
+  * FIXED: Posts count now correctly shows lyrics post type count
+  * FIXED: Categories count now shows translated_language + original_language taxonomies
+  * ADDED: Songwriters sitemap card and link to admin page
+  * IMPROVED: Changed "Posts" labels to "Lyrics" for clarity
+  * IMPROVED: Notifications now appear as elegant popups in bottom-right corner
+  * UX: Notifications auto-close after 5 seconds with smooth animations
+  * UX: Manual close button for notifications
+v2.2.3 - ADMIN UI UPDATE - Sitemap Page Structure:
+  * IMPROVED: Admin sitemap page updated to remove multilingual sitemap references
+  * IMPROVED: Google/Bing ping links now show only main sitemap
+  * IMPROVED: Validation links updated to posts sitemap
+  * IMPROVED: Robots.txt example simplified
+v2.2.2 - SEO IMPROVEMENTS - Sitemap Translation URLs:
+  * ADDED: Translation URLs (/tr/, /es/) now appear in posts sitemap
+  * FIXED: Removed duplicate arcuras_get_post_translations() function conflict
+  * IMPROVED: Multilingual sitemap removed (redundant - translations now in posts sitemap)
+  * IMPROVED: WordPress core sitemap disabled (wp-sitemap.xml redirects to custom sitemap)
+  * IMPROVED: Sitemap flush rewrite rules on theme activation
+  * IMPROVED: Admin sitemap page updated to reflect new structure (no multilingual references)
+  * SEO: All translation pages now properly indexed by search engines
+v2.2.1 - FEATURE - Music Video Popup Modal:
+  * ADDED: Music Video button to platform links (Spotify, YouTube, Apple Music)
+  * ADDED: Popup modal for music video embeds (no longer takes huge page space)
+  * IMPROVED: Music videos now open in elegant popup overlay
+  * FIXED: Kebab menu positioning (now properly aligned inside content wrapper)
+  * FIXED: JavaScript loading issues (direct script tags instead of wp_enqueue)
+  * FIXED: FAQ accordion and line export features now load correctly
+  * UX: Modal can be closed with ESC key, close button, or overlay click
+  * UX: Video stops playing when modal is closed
+  * PERFORMANCE: Conditional loading (only when video exists)
+v2.2.0 - UX IMPROVEMENTS - Kebab Menu Repositioning:
+  * IMPROVED: Kebab menu now positioned absolutely outside text flow
+  * IMPROVED: Removed negative margin-top from mobile kebab trigger
+  * FIXED: Mobile long lyrics lines no longer overlap with kebab menu icon
+  * IMPROVED: Added 40px right padding to lyrics text on mobile for kebab menu space
+  * UX: Kebab menu appears on hover (desktop) and is always visible (mobile)
+  * UX: Cleaner line layout without kebab menu breaking text alignment
+v2.1.9 - BUGFIX - Mobile Infinite Loading Animation:
+  * FIXED: Removed Swiper lazy loading from single lyrics pages
+  * FIXED: Infinite loading spinner on mobile devices (swiper-lazy-preloader)
+  * IMPROVED: Direct image loading with standard WordPress the_post_thumbnail()
+  * PERFORMANCE: Cleaner code, removed unnecessary lazy loading config and CSS
+v2.1.8 - FEATURE - Copy Structure from Original & Visual Improvements:
+  * ADDED: "Copy Structure from Original" button for translations
+  * FEATURE: One-click sync of line breaks/spacing from original to translations
+  * IMPROVED: Empty line spacing increased (16px → 28px) for better verse/chorus separation
+  * UX: Confirmation dialog prevents accidental structure overwrites
+  * UX: Button only visible in translation tabs, not in original language
+v2.1.7 - FEATURE - Numbered Lyrics Editor & Translation Validation:
+  * ADDED: Line numbers in Gutenberg block lyrics textarea (skips empty lines)
+  * ADDED: Real-time non-empty line count display for each language
+  * ADDED: Line count mismatch warning when translations don't match original
+  * IMPROVED: Easier translation alignment with numbered lines
+  * UX: Monospace font for better line alignment visualization
+v2.1.6 - CRITICAL HOTFIX - Block Compatibility Fix:
+  * FIXED: Removed viewScript from block.json (causing "site doesn't support block" error)
+  * FIXED: Frontend script already enqueued via wp_enqueue_scripts, no need in block.json
+  * IMPACT: Resolves "Your site doesn't include support for the arcuras lyrics translation block" error
+v2.1.5 - CRITICAL HOTFIX - Mobile Infinite Loading Bug:
+  * FIXED: Swiper library not loading on single lyrics pages (mobile loading spinner stuck)
+  * FIXED: Added is_singular('lyrics') condition to Swiper loader in header.php
+  * IMPACT: Resolves infinite loading animation on all single lyrics pages on mobile devices
+v2.1.4 - VERSION UPDATE - Cache Busting:
+  * UPDATED: Theme version for deployment cache busting
+v2.1.3 - HOTFIX - Mobile Kebab Menu Alignment:
+  * FIXED: Kebab menu vertical alignment with lyrics text (align-items: center)
+  * IMPROVED: Better visual alignment on mobile screens
+v2.1.2 - HOTFIX - Block Assets Cache Busting:
+  * FIXED: Added explicit style/script declarations in block.json for proper cache busting
+  * FIXED: Updated block version to 2.1.2 to force CSS/JS reload
+  * TECHNICAL: Added editorScript, editorStyle, style, viewScript to block.json
+v2.1.1 - UX IMPROVEMENTS - Lyrics Layout & Mobile Language Selector:
+  * IMPROVED: Reduced spacing between lyric lines for better readability
+  * IMPROVED: Kebab menu now inline with lyrics text using flexbox layout
+  * IMPROVED: Smaller kebab menu icons (16px trigger, 14px dropdown items)
+  * FEATURE: Mobile language dropdown (+X more) for 3+ translations
+  * IMPROVED: Equal padding on lyrics content wrapper (left/right balance)
+  * UX: Translation lines now have 20px bottom margin for clear separation
+v2.1.0 - DEPLOYMENT RELEASE - Production Ready Build:
+  * VERSION: Bumped to 2.1.0 for deployment
+  * QUALITY: All features tested and production ready
+  * PERFORMANCE: Lighthouse score 85/100 maintained
+  * COMPATIBILITY: WordPress 6.0+ and PHP 7.4+ tested
+v2.0.9 - CRITICAL FIX - Sitemap URLs Empty:
+  * FIXED: Sitemap generator was querying 'post' instead of 'lyrics' post type
+  * FIXED: Changed all post_type references from 'post' to 'lyrics' throughout
+  * FIXED: Posts sitemap now shows all 325 lyrics URLs
+  * FIXED: Multilingual sitemap now detects languages from Gutenberg blocks
+  * FIXED: Multilingual sitemap shows all language variations (/es/, /tr/)
+  * FIXED: Categories sitemap now uses translated_language and original_language taxonomies
+  * FIXED: Categories sitemap shows /translation/* and /original/* URLs instead of default categories
+  * TESTED: All sitemaps (posts, multilingual, categories, singers, albums, etc.) working ✅
+v2.0.8 - FEATURE - Apple Music Image Fetch Tool:
+  * ADDED: Bulk Apple Music image fetch tool (Tools → Bulk Image Fetch)
+  * ADDED: Automatic artwork download from iTunes/Apple Music API
+  * ADDED: Scan feature to find lyrics without featured images
+  * ADDED: Progress bar and real-time status updates
+  * ADDED: 1.5 second delay between API requests to avoid rate limiting
+  * FEATURE: Automatically fetches 3000x3000 high-quality JPG artwork
+  * FEATURE: Supports both _apple_music_id and apple_music_url meta fields
+  * UI: Clean admin interface with success/error indicators
+v2.0.5 - FINAL FIX - Complete Import/Export Cycle:
+  * FIXED: Import now properly handles WordPress wp_insert_post escaping
+  * FIXED: Import converts real newlines to \\\\n (4 backslashes) for wp_insert_post
+  * FIXED: Database now stores \\n (escaped newlines) correctly in Gutenberg blocks
+  * FIXED: Export regex updated to match blocks ending with /-->
+  * FIXED: Frontend already handles \\n → real newlines conversion
+  * TESTED: Full import/export cycle working perfectly!
+  * TESTED: Line breaks display correctly on frontend (each line in separate <p>)
+v2.0.4 - CRITICAL FIX - Gutenberg Block Line Breaks & Missing Taxonomies
+  * BREAKING: Must re-export from v2.1.0 to get clean data
+v2.0.7 - CRITICAL FIX - Block Render Line Splitting:
+  * FIXED: Block render now converts literal \n to real newlines before explode()
+  * FIXED: Original lyrics split into lines correctly
+  * FIXED: Translation lyrics split into lines correctly
+  * This fixes all lyrics appearing as single line on frontend
+v2.0.6 - CRITICAL FIX - Import Newline Handling:
+  * FIXED: Import now correctly handles JSON escaped newlines
+  * FIXED: Manual str_replace on JSON string before decode
+  * FIXED: Double-check for any remaining escaped newlines
+  * This fixes newlines becoming literal "n" characters
+v2.0.5 - CRITICAL FIX - Line Break Rendering:
+  * FIXED: Line breaks now render correctly on frontend (added nl2br())
+  * FIXED: Original lyrics now show line breaks properly
+  * FIXED: Translation lyrics now show line breaks properly
+  * This fixes lyrics appearing as single paragraph on frontend
+  * FIXED: Line breaks now correctly imported inside Gutenberg block JSON attributes
+  * FIXED: Block parser now decodes JSON, fixes \\n in lyrics, re-encodes properly
+  * FIXED: Multi-language lyrics in blocks now preserve line breaks correctly
+  * FIXED: Export now includes album, original_language, translated_language taxonomies
+  * FIXED: Import now sets album, original_language, translated_language taxonomies
+  * IMPROVED: Smart detection of Gutenberg block vs plain content
+  * This fixes the issue where imported lyrics appeared as single lines and missing language info
+v2.0.3 - HOTFIX - Import Line Break Fix & Delete Tool:
+  * FIXED: Import now correctly handles escaped newlines (\n) in JSON content
+  * FIXED: Line breaks in lyrics content are preserved during import
+  * NEW FEATURE: Added "Delete All Lyrics" tool for bulk removal
+  * IMPROVED: Delete tool shows detailed results (deleted count, errors)
+  * SECURITY: Added double confirmation for delete all lyrics operation
+v2.0.2 - HOTFIX - Import Tool Improvements:
+  * IMPROVED: Enhanced import validation with detailed error messages
+  * IMPROVED: Added JSON decoding error detection with specific error messages
+  * IMPROVED: Required field validation (title and content must exist)
+  * IMPROVED: Data sanitization for all imported fields (wp_strip_all_tags, sanitize_title)
+  * IMPROVED: Post status validation (only allow publish, draft, pending, private)
+  * IMPROVED: Protected meta key handling (skips WordPress internal meta)
+  * IMPROVED: Automatic serialize/unserialize handling for meta data
+  * IMPROVED: Detailed error reporting (shows which line failed and why)
+  * IMPROVED: Safe defaults (current_time for missing dates, draft for invalid status)
+  * SECURITY: Added comprehensive input sanitization and validation
+v2.0.1 - HOTFIX - Export/Import Tool Fix:
+  * FIXED: Lyrics export now properly downloads JSON file (changed from form POST to AJAX)
+  * FIXED: Export now retrieves full post_content directly from database (bypasses WordPress filters)
+  * FIXED: Added UTF-8 charset header for proper Turkish character support in exports
+  * FIXED: Taxonomy error handling (genre/mood) - converts WP_Error to empty arrays
+  * IMPROVED: Export link now has download attribute for better UX
+  * IMPROVED: Added JSON encoding error detection and reporting
+v2.0.0 - MAJOR UPDATE - CUSTOM POST TYPE MIGRATION & SAVED LINES FEATURE:
+  * Migrated from standard 'post' to custom 'lyrics' post type for better structure
+  * NEW FEATURE: Save individual lyric lines - users can save favorite lines from any song
+  * NEW FEATURE: Saved Lines profile tab - view all saved lines with statistics (total saved, unique songs, languages)
+  * NEW FEATURE: Admin Tools page (Tools → Arcuras Tools) for:
+    - Exporting/Importing lyrics with all taxonomies and metadata (JSON format)
+    - Deleting old posts from previous system
+    - Viewing content statistics
+  * IMPROVEMENTS: Line Export feature now validates user login before saving
+  * IMPROVEMENTS: Featured image validation and fallback SVG placeholder for posts without images
+  * IMPROVEMENTS: Recent Views page now uses 'lyrics' custom post type
+  * IMPROVEMENTS: Better spacing in lyrics display (24px between line groups, 16px between original and translation)
+  * BUG FIX: Fixed JavaScript syntax error in profile page password validator
+  * BUG FIX: Fixed tab switching in profile page (removed conflicting HTML structure)
+  * BUG FIX: Fixed featured image 400 errors with auto-cleanup in Saved Lines
+  * REMOVED: "Latest Added" sidebar menu item (unused feature)
+  * Breaking Change: Custom post type migration requires manual data export/import using new Admin Tools
+v1.9.2 - HERO SLIDER REDESIGN: Modern card-based horizontal scrolling slider with responsive breakpoints (mobile: 1.5 cards, tablet: 2 cards, desktop: 3 cards, large: 5 cards), compact card design with square album art aspect ratio, refined spacing and reduced padding, added subtle border-radius (6px) to header logo for modern aesthetic
+v1.9.1 - APPLE MUSIC PREVIEW PLAYER: Replaced Apple Music iframe embeds with native 30-second preview player using iTunes API, modern glassmorphism design with blur effects, fully responsive mobile layout with compact controls, play button + Apple Music icon side-by-side on mobile, gradient glass background (transparent to opaque from top to bottom)
+v1.9.0 - DESIGN IMPROVEMENTS: Professional 404 page redesign with minimal layout, modern hero slider navigation buttons (larger, better visibility), theme settings panel with tabbed interface (General, Social Media, SEO), subtle gray color scheme for badges (replaced bright accent colors), added borders to category/translation badges for better definition
+v1.8.8 - BUG FIX: Fixed hero slider navigation buttons only working once (removed fade effect causing conflict with loop mode, improved pagination styling with min-height and scale animation for active bullet)
+v1.8.7 - BUG FIX: Fixed hero slider navigation buttons not working (removed !static override, added type="button" and aria-labels for better accessibility)
+v1.8.6 - ACCESSIBILITY FIX: Added title attributes to all iframe embeds (Apple Music, Spotify, YouTube) for screen reader users, improves accessibility score
+v1.8.5 - MAJOR PERFORMANCE BOOST: Lighthouse score 85/100 (+24 points improvement), Perfect CLS (0), Perfect TBT (0ms), LCP optimization with image preload, inline critical Swiper CSS, async JS loading, category + translation dropdowns on Lyrics & Singer pages, all Iconify icons converted to inline SVG for instant loading
+v1.8.4 - Fixed "Through the Years" translation dropdown z-index issue: dropdown now appears above year badges and category tags, optimized build process to exclude node_modules from theme zip (97% size reduction)
+v1.8.3 - Enhanced "Through the Years" section: Added category badges, interactive translation dropdown with language flags, improved mobile UX with responsive design, fixed z-index layering and alignment issues
+v1.8.2 - Fixed multilingual SEO: dropdown links now go to translations (not categories), hreflang tags exclude ?lang for original language, improved title format with "Lyrics and Translation" for better SEO
+v1.8.1 - Added Last Modified column in admin and polishing translation workflows
+v1.7.6 - Repacked theme with Tailwind dist assets, kept core sitemap disabled and ensured admin tools include resolves correctly
+v1.7.5 - Forced core sitemap disable, auto-flush rewrite rules on upgrade, fixed sitemap admin include path
+v1.7.4 - Restored custom sitemap routing, disabled core sitemap, and ensured sitemap URLs resolve to theme generator
+v1.7.3 - Translation feedback moved to CPT with admin table, frontend like/dislike UX, feedback restricted to translations
+v1.7.2 - Enhanced comment UX: avatar for logged-in users, spam keyword/link blocking, improved input contrast
+v1.7.1 - Fixed translated `<title>` rendering with single custom post types, ensured head output order
+v1.7.0 - AJAX translation switching and translated title/meta handling with SEO-friendly URLs
+v1.6.1 - Updated profile navigation to point at custom dashboard, refreshed resource hints for embeds
+v1.6.0 - Improved multilingual SEO meta handling, schema validation, and interactive FAQ enhancements; added language-aware schema filtering
+v1.5.0 - Added multilingual support with user-based language preferences (Turkish/English), WordPress i18n standard implementation with .po/.mo files
+v1.4.0 - Initial release with optimized performance
+*/
+
+/*--------------------------------------------------------------
+>>> TABLE OF CONTENTS:
+----------------------------------------------------------------
+# Base Styles
+# Custom Components
+# WordPress Core
+# Responsive Adjustments
+# Utilities
+--------------------------------------------------------------*/
+
+/*--------------------------------------------------------------
+# Base Styles
+--------------------------------------------------------------*/
+/* These styles are supplementary to Tailwind CSS */
+
+/* Selection style */
+::selection {
+    background-color: rgba(37, 99, 235, 0.3);
+}
+
+/* Focus visible styles for accessibility */
+:focus-visible {
+    outline: 2px solid rgba(37, 99, 235, 0.5);
+    outline-offset: 2px;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/*--------------------------------------------------------------
+# Custom Components
+--------------------------------------------------------------*/
+
+/* Post cards hover effect */
+.post-card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Custom swiper styling */
+.swiper-pagination-bullet-active {
+    background-color: #2563eb !important;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    color: #2563eb !important;
+}
+
+/* Footer widget lists */
+.footer-widget ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.footer-widget ul li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-widget ul li a {
+    display: inline-block;
+    transition: color 0.3s ease;
+}
+
+.footer-widget ul li a:hover {
+    color: #fff;
+}
+
+/*--------------------------------------------------------------
+# WordPress Core
+--------------------------------------------------------------*/
+
+/* WordPress generated classes */
+.alignleft {
+    float: left;
+    margin-right: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.alignright {
+    float: right;
+    margin-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.aligncenter {
+    clear: both;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.wp-caption {
+    margin-bottom: 1.5rem;
+    max-width: 100%;
+}
+
+.wp-caption img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.wp-caption-text {
+    margin: 0.8rem 0;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.screen-reader-text {
+    border: 0;
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute !important;
+    width: 1px;
+    word-wrap: normal !important;
+}
+
+.screen-reader-text:focus {
+    background-color: #f1f1f1;
+    border-radius: 3px;
+    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.6);
+    clip: auto !important;
+    clip-path: none;
+    color: #0f172a;
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    height: auto;
+    left: 5px;
+    line-height: normal;
+    padding: 15px 23px 14px;
+    text-decoration: none;
+    top: 5px;
+    width: auto;
+    z-index: 100000;
+}
+
+.gallery {
+    margin-bottom: 1.5rem;
+}
+
+.gallery-item {
+    display: inline-block;
+    text-align: center;
+    vertical-align: top;
+    width: 100%;
+    padding: 0.5rem;
+}
+
+.gallery-columns-2 .gallery-item {
+    max-width: 50%;
+}
+
+.gallery-columns-3 .gallery-item {
+    max-width: 33.33%;
+}
+
+.gallery-columns-4 .gallery-item {
+    max-width: 25%;
+}
+
+.gallery-columns-5 .gallery-item {
+    max-width: 20%;
+}
+
+.gallery-columns-6 .gallery-item {
+    max-width: 16.66%;
+}
+
+.gallery-columns-7 .gallery-item {
+    max-width: 14.28%;
+}
+
+.gallery-columns-8 .gallery-item {
+    max-width: 12.5%;
+}
+
+.gallery-columns-9 .gallery-item {
+    max-width: 11.11%;
+}
+
+.gallery-caption {
+    display: block;
+    font-size: 0.875rem;
+    color: #6b7280;
+    padding: 0.5rem 0;
+}
+
+/* Comments styling */
+.comment-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.comment-body {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.comment-meta {
+    margin-bottom: 1rem;
+}
+
+.comment-author .avatar {
+    float: left;
+    margin-right: 1rem;
+    border-radius: 50%;
+}
+
+.comment-author .fn {
+    font-weight: 600;
+    font-style: normal;
+}
+
+.comment-metadata {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.comment-metadata a {
+    color: #6b7280;
+}
+
+.comment-content {
+    clear: both;
+}
+
+.comment-reply-link {
+    display: inline-block;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    color: #2563eb;
+}
+
+.comment-reply-link:hover {
+    text-decoration: underline;
+}
+
+.comment-respond {
+    margin-top: 2rem;
+}
+
+.comment-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.comment-form-cookies-consent {
+    display: flex;
+    align-items: center;
+}
+
+.comment-form-cookies-consent input {
+    margin-right: 0.5rem;
+}
+
+/*--------------------------------------------------------------
+# Responsive Adjustments
+--------------------------------------------------------------*/
+
+@media (max-width: 768px) {
+    .alignleft,
+    .alignright {
+        float: none;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+    }
+}
+
+/*--------------------------------------------------------------
+# Utilities
+--------------------------------------------------------------*/
+
+/* Utility classes not provided by Tailwind */
+.object-fit-cover {
+    object-fit: cover;
+}
+
+.transition-base {
+    transition: all 0.3s ease;
+}
+
+.aspect-ratio-16-9 {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+}
+
+.aspect-ratio-16-9 iframe,
+.aspect-ratio-16-9 img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

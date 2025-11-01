@@ -1,0 +1,49 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "arcuras/lyrics-translations",
+	"version": "2.7.0",
+	"title": "Lyrics & Translations",
+	"category": "text",
+	"icon": "translation",
+	"description": "A block for displaying song lyrics with multiple language translations.",
+	"keywords": ["lyrics", "translations", "music", "songs"],
+	"textdomain": "gufte",
+	"render": "file:./render.php",
+	"editorScript": "file:./build/index.js",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css",
+	"supports": {
+		"html": false,
+		"align": false,
+		"anchor": false,
+		"customClassName": true,
+		"reusable": true
+	},
+	"attributes": {
+		"languages": {
+			"type": "array",
+			"default": [
+				{
+					"code": "en",
+					"name": "English",
+					"lyrics": "",
+					"isOriginal": true,
+					"sections": []
+				}
+			]
+		},
+		"sections": {
+			"type": "array",
+			"default": []
+		},
+		"autoDetectSections": {
+			"type": "boolean",
+			"default": true
+		},
+		"sectionComments": {
+			"type": "object",
+			"default": {}
+		}
+	}
+}

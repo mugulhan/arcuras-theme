@@ -1,0 +1,16 @@
+{
+  "name": "arcuras",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node build.mjs && npm run build:css",
+    "build:css": "tailwindcss -i ./src/input.css -o ../dist/css/tailwind.min.css --minify",
+    "watch:css": "tailwindcss -i ./src/input.css -o ../dist/css/tailwind.min.css --watch",
+    "dev": "node build.mjs --watch",
+    "release": "npm run build && node release.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "tailwindcss": "^3.4.1"
+  }
+}

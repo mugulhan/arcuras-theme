@@ -1,0 +1,1166 @@
+/**
+ * Lyrics & Translations Block - Editor (Vanilla JS)
+ */
+
+(function (wp) {
+	const { registerBlockType } = wp.blocks;
+	const { InspectorControls, useBlockProps } = wp.blockEditor;
+	const { PanelBody, Button, TabPanel, TextareaControl, SelectControl, ToggleControl, BaseControl } = wp.components;
+	const { createElement: el, Fragment, useState, useEffect, useRef } = wp.element;
+	const { __ } = wp.i18n;
+
+	/**
+	 * Custom Numbered Textarea Component
+	 * Shows line numbers, skipping empty lines
+	 */
+	const NumberedTextarea = function(props) {
+		const { label, value, onChange, help, rows, sections } = props;
+		const [lineCount, setLineCount] = useState(0);
+		const textareaRef = useRef(null);
+		const lineNumbersRef = useRef(null);
+
+		// Calculate non-empty line count
+		const getNonEmptyLineCount = function(text) {
+			if (!text) return 0;
+			const lines = text.split('\n');
+			return lines.filter(function(line) {
+				return line.trim() !== '';
+			}).length;
+		};
+
+		// Update line count when value changes
+		useEffect(function() {
+			setLineCount(getNonEmptyLineCount(value || ''));
+		}, [value]);
+
+		// Sync scroll between textarea and line numbers
+		const handleScroll = function(e) {
+			if (lineNumbersRef.current) {
+				lineNumbersRef.current.scrollTop = e.target.scrollTop;
+			}
+		};
+
+		// Generate line numbers HTML (skip empty lines)
+		const generateLineNumbers = function() {
+			const text = value || '';
+			const lines = text.split('\n');
+			let lineNumber = 1;
+
+			return lines.map(function(line, index) {
+				const isEmpty = line.trim() === '';
+				const number = isEmpty ? '' : lineNumber;
+
+				if (!isEmpty) lineNumber++;
+
+				return el('div', {
+					key: index,
+					className: 'line-number' + (isEmpty ? ' empty' : ''),
+					style: {
+						minWidth: '20px',
+						textAlign: 'right'
+					}
+				}, number);
+			});
+		};
+
+		return el(BaseControl, {
+			label: label,
+			help: help ? el('div', {},
+				help,
+				el('div', {
+					style: {
+						marginTop: '8px',
+						fontSize: '12px',
+						color: '#666',
+						fontWeight: '500'
+					}
+				}, __('Non-empty lines: ', 'gufte') + lineCount)
+			) : el('div', {
+				style: {
+					fontSize: '12px',
+					color: '#666',
+					fontWeight: '500',
+					marginTop: '4px'
+				}
+			}, __('Non-empty lines: ', 'gufte') + lineCount),
+			className: 'numbered-textarea-control'
+		}, el('div', {
+			className: 'numbered-textarea-wrapper',
+			style: {
+				position: 'relative',
+				border: '1px solid #949494',
+				borderRadius: '2px',
+				backgroundColor: '#fff',
+				paddingLeft: '48px'
+			}
+		},
+			// Line numbers column (fixed position)
+			el('div', {
+				ref: lineNumbersRef,
+				className: 'line-numbers',
+				style: {
+					position: 'absolute',
+					left: 0,
+					top: 0,
+					bottom: 0,
+					width: '48px',
+					padding: '8px 4px',
+					backgroundColor: '#f7f7f7',
+					borderRight: '1px solid #ddd',
+					fontSize: '13px',
+					lineHeight: '1.4',
+					color: '#666',
+					userSelect: 'none',
+					overflow: 'hidden',
+					fontFamily: 'monospace',
+					pointerEvents: 'none'
+				}
+			}, generateLineNumbers()),
+			// Textarea
+			el('textarea', {
+				ref: textareaRef,
+				value: value || '',
+				onChange: function(e) {
+					onChange(e.target.value);
+				},
+				onScroll: handleScroll,
+				rows: rows || 20,
+				style: {
+					width: '100%',
+					padding: '8px 12px',
+					border: 'none',
+					outline: 'none',
+					resize: 'vertical',
+					fontSize: '13px',
+					lineHeight: '1.4',
+					fontFamily: 'monospace',
+					minHeight: (rows || 20) * 22 + 'px',
+					backgroundColor: 'transparent'
+				}
+			})
+		));
+	};
+
+	// Available languages with ISO codes
+	const AVAILABLE_LANGUAGES = [
+		{ value: 'en', label: 'English' },
+		{ value: 'es', label: 'Spanish (Español)' },
+		{ value: 'tr', label: 'Turkish (Türkçe)' },
+		{ value: 'fr', label: 'French (Français)' },
+		{ value: 'de', label: 'German (Deutsch)' },
+		{ value: 'it', label: 'Italian (Italiano)' },
+		{ value: 'pt', label: 'Portuguese (Português)' },
+		{ value: 'ar', label: 'Arabic (العربية)' },
+		{ value: 'ru', label: 'Russian (Русский)' },
+		{ value: 'ja', label: 'Japanese (日本語)' },
+		{ value: 'ko', label: 'Korean (한국어)' },
+		{ value: 'zh', label: 'Chinese (中文)' },
+		{ value: 'hi', label: 'Hindi (हिन्दी)' },
+		{ value: 'nl', label: 'Dutch (Nederlands)' },
+		{ value: 'pl', label: 'Polish (Polski)' },
+		{ value: 'sv', label: 'Swedish (Svenska)' },
+		{ value: 'no', label: 'Norwegian (Norsk)' },
+		{ value: 'da', label: 'Danish (Dansk)' },
+		{ value: 'fi', label: 'Finnish (Suomi)' },
+		{ value: 'el', label: 'Greek (Ελληνικά)' },
+		{ value: 'he', label: 'Hebrew (עברית)' },
+		{ value: 'uk', label: 'Ukrainian (Українська)' },
+		{ value: 'cs', label: 'Czech (Čeština)' },
+		{ value: 'ro', label: 'Romanian (Română)' },
+		{ value: 'hu', label: 'Hungarian (Magyar)' },
+		{ value: 'th', label: 'Thai (ไทย)' },
+		{ value: 'vi', label: 'Vietnamese (Tiếng Việt)' },
+		{ value: 'id', label: 'Indonesian (Bahasa Indonesia)' },
+	];
+
+	// SEO Title/Description helpers
+	const SEO_DATA = {
+		en: {
+			original_suffix: 'Lyrics, Translations and Annotations',
+			meta_suffix: 'Read lyrics, discover translations in multiple languages, and explore detailed annotations'
+		},
+		es: {
+			original_suffix: 'Letras, Traducciones y Anotaciones',
+			meta_suffix: 'Lee las letras, descubre traducciones en varios idiomas y explora anotaciones detalladas'
+		},
+		tr: {
+			original_suffix: 'Şarkı Sözleri, Çeviriler ve Açıklamalar',
+			meta_suffix: 'Şarkı sözlerini okuyun, birden fazla dilde çevirileri keşfedin ve detaylı açıklamaları inceleyin'
+		},
+		de: {
+			original_suffix: 'Liedtext, Übersetzungen und Anmerkungen',
+			meta_suffix: 'Lesen Sie die Texte, entdecken Sie Übersetzungen in mehreren Sprachen und erkunden Sie detaillierte Anmerkungen'
+		},
+		fr: {
+			original_suffix: 'Paroles, Traductions et Annotations',
+			meta_suffix: 'Lisez les paroles, découvrez les traductions en plusieurs langues et explorez les annotations détaillées'
+		},
+		ar: {
+			original_suffix: 'كلمات الأغنية والترجمات والتعليقات',
+			meta_suffix: 'اقرأ الكلمات، اكتشف الترجمات بعدة لغات، واستكشف التعليقات التفصيلية'
+		},
+		it: {
+			original_suffix: 'Testo, Traduzioni e Annotazioni',
+			meta_suffix: 'Leggi i testi, scopri le traduzioni in più lingue ed esplora le annotazioni dettagliate'
+		},
+		pt: {
+			original_suffix: 'Letras, Traduções e Anotações',
+			meta_suffix: 'Leia as letras, descubra traduções em vários idiomas e explore anotações detalhadas'
+		},
+		ru: {
+			original_suffix: 'Текст песни, переводы и комментарии',
+			meta_suffix: 'Читайте тексты, открывайте переводы на несколько языков и изучайте подробные комментарии'
+		},
+		ja: {
+			original_suffix: '歌詞、翻訳、注釈',
+			meta_suffix: '歌詞を読み、複数言語の翻訳を発見し、詳細な注釈を探索してください'
+		},
+		ko: {
+			original_suffix: '가사, 번역 및 주석',
+			meta_suffix: '가사를 읽고, 여러 언어로 된 번역을 발견하고, 자세한 주석을 살펴보세요'
+		},
+		zh: {
+			original_suffix: '歌词、翻译和注释',
+			meta_suffix: '阅读歌词，发现多语言翻译，探索详细注释'
+		},
+		hi: {
+			original_suffix: 'गीत, अनुवाद और टिप्पणियाँ',
+			meta_suffix: 'गीत पढ़ें, कई भाषाओं में अनुवाद खोजें और विस्तृत टिप्पणियों का अन्वेषण करें'
+		},
+		nl: {
+			original_suffix: 'Songteksten, Vertalingen en Annotaties',
+			meta_suffix: 'Lees songteksten, ontdek vertalingen in meerdere talen en verken gedetailleerde annotaties'
+		},
+		pl: {
+			original_suffix: 'Teksty Piosenek, Tłumaczenia i Adnotacje',
+			meta_suffix: 'Czytaj teksty, odkrywaj tłumaczenia w wielu językach i przeglądaj szczegółowe adnotacje'
+		},
+		sv: {
+			original_suffix: 'Texter, Översättningar och Kommentarer',
+			meta_suffix: 'Läs texter, upptäck översättningar på flera språk och utforska detaljerade kommentarer'
+		},
+		no: {
+			original_suffix: 'Tekster, Oversettelser og Merknader',
+			meta_suffix: 'Les tekster, oppdag oversettelser på flere språk og utforsk detaljerte merknader'
+		},
+		da: {
+			original_suffix: 'Tekster, Oversættelser og Annotationer',
+			meta_suffix: 'Læs tekster, opdag oversættelser på flere sprog og udforsk detaljerede annotationer'
+		},
+		fi: {
+			original_suffix: 'Sanoitukset, Käännökset ja Huomautukset',
+			meta_suffix: 'Lue sanoituksia, löydä käännöksiä useilla kielillä ja tutustu yksityiskohtaisiin huomautuksiin'
+		},
+		el: {
+			original_suffix: 'Στίχοι, Μεταφράσεις και Σημειώσεις',
+			meta_suffix: 'Διαβάστε στίχους, ανακαλύψτε μεταφράσεις σε πολλές γλώσσες και εξερευνήστε λεπτομερείς σημειώσεις'
+		},
+		he: {
+			original_suffix: 'מילים, תרגומים והערות',
+			meta_suffix: 'קרא מילים, גלה תרגומים במספר שפות וחקור הערות מפורטות'
+		},
+		uk: {
+			original_suffix: 'Тексти пісень, переклади та коментарі',
+			meta_suffix: 'Читайте тексти, відкривайте переклади кількома мовами та вивчайте детальні коментарі'
+		},
+		cs: {
+			original_suffix: 'Texty, Překlady a Poznámky',
+			meta_suffix: 'Čtěte texty, objevujte překlady v několika jazycích a prozkoumávejte podrobné poznámky'
+		},
+		ro: {
+			original_suffix: 'Versuri, Traduceri și Adnotări',
+			meta_suffix: 'Citește versuri, descoperă traduceri în mai multe limbi și explorează adnotări detaliate'
+		},
+		hu: {
+			original_suffix: 'Dalszövegek, Fordítások és Megjegyzések',
+			meta_suffix: 'Olvasson dalszövegeket, fedezzen fel fordításokat több nyelven és fedezze fel a részletes megjegyzéseket'
+		},
+		th: {
+			original_suffix: 'เนื้อเพลง, การแปล และคำอธิบาย',
+			meta_suffix: 'อ่านเนื้อเพลง ค้นพบการแปลหลายภาษา และสำรวจคำอธิบายโดยละเอียด'
+		},
+		vi: {
+			original_suffix: 'Lời bài hát, Bản dịch và Chú thích',
+			meta_suffix: 'Đọc lời bài hát, khám phá bản dịch bằng nhiều ngôn ngữ và khám phá chú thích chi tiết'
+		},
+		id: {
+			original_suffix: 'Lirik, Terjemahan dan Anotasi',
+			meta_suffix: 'Baca lirik, temukan terjemahan dalam berbagai bahasa dan jelajahi anotasi terperinci'
+		}
+	};
+
+	function getSEOPreview(lang, postTitle) {
+		const isOriginal = lang.isOriginal || false;
+		const langCode = lang.code || 'en';
+		const seoData = SEO_DATA[langCode] || SEO_DATA['en'];
+
+		// Title
+		const titleSuffix = isOriginal ? seoData.original_suffix : (lang.name + ' Translation');
+		const title = postTitle ? `${postTitle} | ${titleSuffix}` : `Song Title | ${titleSuffix}`;
+
+		// Description
+		const description = postTitle
+			? `${postTitle} - ${seoData.meta_suffix}`
+			: `Song Title - ${seoData.meta_suffix}`;
+
+		return { title, description };
+	}
+
+	registerBlockType('arcuras/lyrics-translations', {
+		title: __('Lyrics & Translations', 'gufte'),
+		icon: 'translation',
+		category: 'widgets',
+		supports: {
+			align: false,
+			anchor: false,
+			customClassName: true,
+			html: false,
+			reusable: true
+		},
+		attributes: {
+			languages: {
+				type: 'array',
+				default: [
+					{
+						code: 'en',
+						name: 'English',
+						lyrics: '',
+						isOriginal: true
+					}
+				]
+			},
+			showCustomLanguageModal: {
+				type: 'boolean',
+				default: false
+			},
+			customLangCode: {
+				type: 'string',
+				default: ''
+			},
+			customLangName: {
+				type: 'string',
+				default: ''
+			},
+			autoDetectSections: {
+				type: 'boolean',
+				default: true
+			},
+			sectionComments: {
+				type: 'object',
+				default: {}
+			}
+		},
+
+		edit: function (props) {
+			const { attributes, setAttributes } = props;
+			const { languages, sectionComments } = attributes;
+
+			// Get block props for proper wrapper
+			const blockProps = useBlockProps({
+				className: 'lyrics-block-wrapper'
+			});
+
+			// Auto-detect sections based on repetition (like PHP version)
+			const autoDetectSectionsFromLyrics = function(lyrics) {
+				if (!lyrics) return [];
+
+				const lines = lyrics.split('\n');
+				const blocks = [];
+				let currentBlock = [];
+				let blockStartIndex = -1; // Track where the current block starts
+
+				// Split into blocks separated by empty lines
+				for (let i = 0; i < lines.length; i++) {
+					const isEmpty = lines[i].trim() === '';
+
+					if (isEmpty) {
+						if (currentBlock.length > 0) {
+							blocks.push({
+								lines: currentBlock,
+								startIndex: blockStartIndex,
+								normalized: currentBlock.join(' ').toLowerCase().trim()
+							});
+							currentBlock = [];
+							blockStartIndex = -1;
+						}
+					} else {
+						if (currentBlock.length === 0) {
+							// This is the first non-empty line of a new block
+							blockStartIndex = i;
+						}
+						currentBlock.push(lines[i]);
+					}
+				}
+
+				// Add last block
+				if (currentBlock.length > 0) {
+					blocks.push({
+						lines: currentBlock,
+						startIndex: blockStartIndex,
+						normalized: currentBlock.join(' ').toLowerCase().trim()
+					});
+				}
+
+				// Find repeating blocks (chorus candidates)
+				const blockCounts = {};
+				blocks.forEach(function(block, idx) {
+					const normalized = block.normalized;
+					if (!blockCounts[normalized]) {
+						blockCounts[normalized] = [];
+					}
+					blockCounts[normalized].push(idx);
+				});
+
+				// Assign section types
+				const sections = [];
+				let verseCounter = 1;
+				let chorusCounter = 1;
+				const labeledNormalized = new Set();
+
+				blocks.forEach(function(block, idx) {
+					const normalized = block.normalized;
+					const occurrences = blockCounts[normalized].length;
+
+					// If block appears more than once, it's likely a chorus
+					if (occurrences >= 2) {
+						if (!labeledNormalized.has(normalized)) {
+							sections.push({
+								name: 'Chorus',
+								type: 'chorus',
+								startIndex: block.startIndex
+							});
+							labeledNormalized.add(normalized);
+						}
+					} else {
+						// Unique block, likely a verse
+						sections.push({
+							name: 'Verse ' + verseCounter,
+							type: 'verse',
+							startIndex: block.startIndex
+						});
+						verseCounter++;
+					}
+				});
+
+				return sections;
+			};
+
+			// Detect manual section markers like [Verse 1], [Chorus]
+			const detectManualSections = function(lyrics) {
+				if (!lyrics) return [];
+				const lines = lyrics.split('\n');
+				const sections = [];
+				const sectionPattern = /^\[(Verse \d+|Chorus|Bridge|Pre-Chorus|Intro|Outro|Hook|Interlude|Post-Chorus)\]/i;
+
+				for (let i = 0; i < lines.length; i++) {
+					const match = lines[i].match(sectionPattern);
+					if (match) {
+						sections.push({
+							name: match[1],
+							lineIndex: i
+						});
+					}
+				}
+				return sections;
+			};
+
+			// Get all unique sections across all languages
+			const getAllSections = function() {
+				const sectionsSet = new Set();
+
+				// Find original language
+				const originalLang = languages.find(function(lang) {
+					return lang.isOriginal;
+				}) || languages[0];
+
+				if (!originalLang || !originalLang.lyrics) {
+					return [];
+				}
+
+				// Check if auto-detect is enabled
+				if (attributes.autoDetectSections) {
+					// Use auto-detection on original language only
+					const sections = autoDetectSectionsFromLyrics(originalLang.lyrics);
+					sections.forEach(function(section) {
+						sectionsSet.add(section.name);
+					});
+				} else {
+					// Use manual markers across all languages
+					languages.forEach(function(lang) {
+						const sections = detectManualSections(lang.lyrics);
+						sections.forEach(function(section) {
+							sectionsSet.add(section.name);
+						});
+					});
+				}
+
+				return Array.from(sectionsSet).sort();
+			};
+
+			// Update section comment
+			const updateSectionComment = function(sectionName, langCode, comment) {
+				const key = sectionName + '__' + langCode;
+				const newComments = Object.assign({}, sectionComments || {});
+
+				if (comment && comment.trim()) {
+					newComments[key] = comment.trim();
+				} else {
+					delete newComments[key];
+				}
+
+				setAttributes({ sectionComments: newComments });
+			};
+
+			// Get section comment
+			const getSectionComment = function(sectionName, langCode) {
+				const key = sectionName + '__' + langCode;
+				return (sectionComments && sectionComments[key]) || '';
+			};
+
+			const addLanguage = function (langCode, langName) {
+				// Check if language already exists
+				const exists = languages.some(function(lang) {
+					return lang.code === langCode;
+				});
+
+				if (exists) {
+					alert(__('This language is already added!', 'gufte'));
+					return;
+				}
+
+				const newLanguages = languages.slice();
+				newLanguages.push({
+					code: langCode,
+					name: langName,
+					lyrics: '',
+					isOriginal: false
+				});
+				setAttributes({ languages: newLanguages });
+			};
+
+			// Get available languages that haven't been added yet
+			const getAvailableLanguages = function() {
+				return AVAILABLE_LANGUAGES.filter(function(lang) {
+					return !languages.some(function(addedLang) {
+						return addedLang.code === lang.value;
+					});
+				});
+			};
+
+			const removeLanguage = function (index) {
+				if (languages.length <= 1) {
+					alert(__('You must have at least one language!', 'gufte'));
+					return;
+				}
+				const newLanguages = languages.filter(function (_, i) {
+					return i !== index;
+				});
+				setAttributes({ languages: newLanguages });
+			};
+
+			// Sync line breaks from original to translation
+			const syncStructureFromOriginal = function(translationIndex) {
+				// Find original language
+				const originalLang = languages.find(function(lang) {
+					return lang.isOriginal;
+				});
+
+				if (!originalLang || !originalLang.lyrics) {
+					alert(__('No original lyrics found!', 'gufte'));
+					return;
+				}
+
+				const translationLang = languages[translationIndex];
+				if (!translationLang || !translationLang.lyrics) {
+					alert(__('Translation is empty!', 'gufte'));
+					return;
+				}
+
+				// Get original structure (empty line positions)
+				const originalLines = originalLang.lyrics.split('\n');
+				const translationLines = translationLang.lyrics.split('\n').filter(function(line) {
+					return line.trim() !== '';
+				}); // Only non-empty lines
+
+				// Build new translation with original structure
+				const newTranslationLines = [];
+				let translationLineIndex = 0;
+
+				for (let i = 0; i < originalLines.length; i++) {
+					const isOriginalEmpty = originalLines[i].trim() === '';
+
+					if (isOriginalEmpty) {
+						// Copy empty line from original
+						newTranslationLines.push('');
+					} else {
+						// Add next translation line
+						if (translationLineIndex < translationLines.length) {
+							newTranslationLines.push(translationLines[translationLineIndex]);
+							translationLineIndex++;
+						} else {
+							// Translation ran out of lines, add empty
+							newTranslationLines.push('');
+						}
+					}
+				}
+
+				// If translation has more lines than original, warn user
+				if (translationLineIndex < translationLines.length) {
+					const remainingLines = translationLines.length - translationLineIndex;
+					alert(__('Warning: Translation has ', 'gufte') + remainingLines + __(' more lines than original. Extra lines were not included.', 'gufte'));
+				}
+
+				// Update the translation
+				updateLanguage(translationIndex, 'lyrics', newTranslationLines.join('\n'));
+			};
+
+			const updateLanguage = function (index, field, value) {
+				const newLanguages = languages.map(function(lang, i) {
+					if (i === index) {
+						const updatedLang = {
+							code: lang.code,
+							name: lang.name,
+							lyrics: lang.lyrics,
+							isOriginal: lang.isOriginal || false
+						};
+						updatedLang[field] = value;
+						return updatedLang;
+					}
+					return lang;
+				});
+				setAttributes({ languages: newLanguages });
+			};
+
+			const setAsOriginal = function (index) {
+				const newLanguages = languages.map(function(lang, i) {
+					return {
+						code: lang.code,
+						name: lang.name,
+						lyrics: lang.lyrics,
+						isOriginal: i === index
+					};
+				});
+				setAttributes({ languages: newLanguages });
+			};
+
+			// Create tabs for each language
+			const tabs = languages.map(function (lang, index) {
+				return {
+					name: lang.code,
+					title: lang.name + (lang.isOriginal ? ' ★' : ''),
+					className: 'lyrics-tab-' + lang.code
+				};
+			});
+
+			return el(
+				Fragment,
+				{},
+				// Inspector Controls
+				el(
+					InspectorControls,
+					{},
+					el(
+						PanelBody,
+						{
+							title: __('Languages', 'gufte'),
+							initialOpen: true
+						},
+						el('p', { className: 'components-base-control__help' },
+							__('Add or remove translation languages for this song.', 'gufte')
+						)
+					),
+					el(
+						PanelBody,
+						{
+							title: __('Section Detection', 'gufte'),
+							initialOpen: false
+						},
+						el(ToggleControl, {
+							label: __('Auto-detect Sections', 'gufte'),
+							help: attributes.autoDetectSections
+								? __('Automatically detects Verse and Chorus sections based on repetition patterns.', 'gufte')
+								: __('Use manual [Verse 1], [Chorus] markers in your lyrics.', 'gufte'),
+							checked: attributes.autoDetectSections || false,
+							onChange: function (value) {
+								setAttributes({ autoDetectSections: value });
+							}
+						}),
+						!attributes.autoDetectSections && el('p', {
+							className: 'components-base-control__help',
+							style: { marginTop: '12px', padding: '12px', background: '#f0f7ff', borderRadius: '4px', fontSize: '13px' }
+						},
+							__('Manual mode: Add [Verse 1], [Chorus], [Bridge], etc. at the start of lines.', 'gufte')
+						),
+						// Show detected sections if auto-detect is enabled
+						attributes.autoDetectSections && (function() {
+							// Find original language
+							const originalLang = languages.find(function(lang) {
+								return lang.isOriginal;
+							}) || languages[0];
+
+							if (!originalLang || !originalLang.lyrics) {
+								return null;
+							}
+
+							const sections = autoDetectSectionsFromLyrics(originalLang.lyrics);
+
+							if (sections.length === 0) {
+								return el('p', {
+									className: 'components-base-control__help',
+									style: { marginTop: '12px', padding: '12px', background: '#f9f9f9', borderRadius: '4px', fontSize: '13px', color: '#666' }
+								}, __('No sections detected yet. Add lyrics to see detected sections.', 'gufte'));
+							}
+
+							return el('div', {
+								style: {
+									marginTop: '16px',
+									padding: '12px',
+									background: '#f0f7ff',
+									borderRadius: '4px',
+									fontSize: '13px'
+								}
+							},
+								el('strong', { style: { display: 'block', marginBottom: '8px', color: '#667eea' } },
+									__('Detected Sections:', 'gufte')
+								),
+								el('ul', {
+									style: {
+										margin: '0',
+										paddingLeft: '20px',
+										listStyle: 'disc'
+									}
+								},
+									sections.map(function(section) {
+										return el('li', {
+											key: section.name + '_' + section.startIndex,
+											style: {
+												marginBottom: '4px',
+												color: '#1e1e1e'
+											}
+										},
+											el('strong', {}, section.name),
+											el('span', { style: { color: '#666', fontSize: '12px', marginLeft: '6px' } },
+												'(Line ' + (section.startIndex + 1) + ')'
+											)
+										);
+									})
+								)
+							);
+						})()
+					),
+					el(
+						PanelBody,
+						{
+							title: __('Section Comments', 'gufte'),
+							initialOpen: false
+						},
+						el('p', { className: 'components-base-control__help', style: { marginBottom: '16px' } },
+							__('Add explanatory comments for each section. Comments will appear when users click on the section.', 'gufte')
+						),
+						(function() {
+							const allSections = getAllSections();
+
+							if (allSections.length === 0) {
+								return el('div', {
+									style: {
+										padding: '12px',
+										background: '#f0f0f1',
+										borderRadius: '4px',
+										fontSize: '13px',
+										textAlign: 'center',
+										color: '#666'
+									}
+								}, __('No sections detected. Add section markers like [Verse 1], [Chorus] to your lyrics.', 'gufte'));
+							}
+
+							return allSections.map(function(sectionName) {
+								return el('div', {
+									key: sectionName,
+									style: {
+										marginBottom: '20px',
+										padding: '12px',
+										border: '1px solid #ddd',
+										borderRadius: '8px',
+										background: '#fafafa'
+									}
+								},
+									el('h4', {
+										style: {
+											margin: '0 0 12px 0',
+											fontSize: '13px',
+											fontWeight: '600',
+											color: '#1e1e1e'
+										}
+									}, '📌 ' + sectionName),
+									languages.map(function(lang) {
+										const commentValue = getSectionComment(sectionName, lang.code);
+										const hasComment = commentValue.length > 0;
+
+										return el('div', {
+											key: lang.code,
+											style: { marginBottom: '12px' }
+										},
+											el('label', {
+												style: {
+													display: 'block',
+													fontSize: '12px',
+													fontWeight: '500',
+													marginBottom: '4px',
+													color: '#555'
+												}
+											}, lang.name + (hasComment ? ' ✓' : '')),
+											el('textarea', {
+												value: commentValue,
+												onChange: function(e) {
+													updateSectionComment(sectionName, lang.code, e.target.value);
+												},
+												placeholder: __('Add comment for this section in ' + lang.name + '...', 'gufte'),
+												rows: 2,
+												style: {
+													width: '100%',
+													padding: '8px',
+													fontSize: '13px',
+													border: '1px solid #ddd',
+													borderRadius: '4px',
+													resize: 'vertical',
+													fontFamily: 'inherit'
+												}
+											})
+										);
+									})
+								);
+							});
+						})()
+					)
+				),
+				// Block content
+				el(
+					'div',
+					blockProps,
+					el(
+						'div',
+						{ className: 'lyrics-translations-editor' },
+						el(
+							'div',
+							{ className: 'block-header' },
+							el(
+								'svg',
+								{
+									className: 'block-icon',
+									width: '24',
+									height: '24',
+									viewBox: '0 0 24 24',
+									fill: 'none'
+								},
+								el('path', {
+									d: 'M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z',
+									fill: 'currentColor'
+								})
+							),
+							el('h3', {}, __('Lyrics & Translations', 'gufte'))
+						),
+						// Language selector (only show if there are languages to add)
+						getAvailableLanguages().length > 0 && el(
+							'div',
+							{ className: 'language-selector-wrapper' },
+							el(
+								'div',
+								{ className: 'language-selector' },
+								el('label', { className: 'language-selector-label' },
+									__('Add Translation:', 'gufte')
+								),
+								el(SelectControl, {
+									value: '',
+									options: [
+										{ value: '', label: __('Select a language...', 'gufte'), disabled: true }
+									].concat(getAvailableLanguages()),
+									onChange: function (value) {
+										if (value) {
+											const selectedLang = AVAILABLE_LANGUAGES.find(function (l) {
+												return l.value === value;
+											});
+											if (selectedLang) {
+												addLanguage(selectedLang.value, selectedLang.label);
+											}
+										}
+									},
+									className: 'language-selector-dropdown'
+								}),
+								el(Button, {
+									isSecondary: true,
+									className: 'add-custom-language-button',
+									onClick: function () {
+										const customCode = prompt(__('Enter ISO language code (e.g., "vi" for Vietnamese):', 'gufte'));
+										if (!customCode || customCode.length < 2 || customCode.length > 3) {
+											alert(__('Please enter a valid 2-3 letter ISO code.', 'gufte'));
+											return;
+										}
+										const customName = prompt(__('Enter language name (e.g., "Vietnamese"):', 'gufte'));
+										if (!customName) {
+											alert(__('Please enter a language name.', 'gufte'));
+											return;
+										}
+										addLanguage(customCode.toLowerCase(), customName);
+									}
+							}, '+ ' + __('Add Custom Language', 'gufte'))
+							)
+						),
+						// Line count validation warning
+						(function() {
+							const getNonEmptyLineCount = function(text) {
+								if (!text) return 0;
+								const lines = text.split('\n');
+								return lines.filter(function(line) {
+									return line.trim() !== '';
+								}).length;
+							};
+
+							const lineCounts = languages.map(function(lang) {
+								return {
+									name: lang.name,
+									count: getNonEmptyLineCount(lang.lyrics),
+									isOriginal: lang.isOriginal
+								};
+							});
+
+							const originalCount = lineCounts.find(function(lc) {
+								return lc.isOriginal;
+							});
+
+							if (!originalCount || originalCount.count === 0) return null;
+
+							const mismatchedLangs = lineCounts.filter(function(lc) {
+								return !lc.isOriginal && lc.count > 0 && lc.count !== originalCount.count;
+							});
+
+							if (mismatchedLangs.length === 0) return null;
+
+							return el('div', {
+								style: {
+									padding: '12px',
+									margin: '12px 0',
+									backgroundColor: '#fff3cd',
+									border: '1px solid #ffc107',
+									borderRadius: '4px',
+									fontSize: '13px'
+								}
+							},
+								el('strong', {
+									style: { color: '#856404', display: 'block', marginBottom: '8px' }
+								}, '⚠️ ' + __('Line Count Mismatch', 'gufte')),
+								el('div', { style: { color: '#856404' } },
+									__('Original', 'gufte') + ' (' + originalCount.name + '): ' + originalCount.count + ' ' + __('lines', 'gufte')
+								),
+								mismatchedLangs.map(function(lang, i) {
+									return el('div', {
+										key: i,
+										style: { color: '#856404' }
+									}, lang.name + ': ' + lang.count + ' ' + __('lines', 'gufte') + ' (' + (lang.count > originalCount.count ? '+' : '') + (lang.count - originalCount.count) + ')');
+								})
+							);
+						})(),
+						el(
+							TabPanel,
+							{
+								className: 'lyrics-tab-panel',
+								activeClass: 'is-active',
+								tabs: tabs,
+								key: JSON.stringify(languages.map(function(l) { return { code: l.code, isOriginal: l.isOriginal }; }))
+							},
+							function (tab) {
+								const index = languages.findIndex(function (l) {
+									return l.code === tab.name;
+								});
+								const lang = languages[index];
+
+								// Get post title dynamically for SEO preview
+								const postTitle = (wp.data && wp.data.select && wp.data.select('core/editor'))
+									? wp.data.select('core/editor').getEditedPostAttribute('title')
+									: 'Song Title';
+
+								const seoPreview = getSEOPreview(lang, postTitle);
+
+								return el(
+									'div',
+									{ className: 'lyrics-tab-content' },
+									el(
+										'div',
+										{ className: 'language-settings' },
+										el(SelectControl, {
+											label: __('Language', 'gufte'),
+											value: lang.code,
+											options: AVAILABLE_LANGUAGES,
+											onChange: function (value) {
+												const selectedLang = AVAILABLE_LANGUAGES.find(function (l) {
+													return l.value === value;
+												});
+												// Update both code and name in a single state update
+												const newLanguages = languages.map(function(l, i) {
+													if (i === index) {
+														return {
+															code: value,
+															name: selectedLang.label,
+															lyrics: l.lyrics,
+															isOriginal: l.isOriginal || false
+														};
+													}
+													return l;
+												});
+												setAttributes({ languages: newLanguages });
+											}
+										}),
+										el(ToggleControl, {
+											label: __('Set as Original Language', 'gufte'),
+											help: __('The original language will be displayed on the left', 'gufte'),
+											checked: lang.isOriginal || false,
+											onChange: function (value) {
+												if (value) {
+													setAsOriginal(index);
+												}
+											}
+										}),
+										el('div', { style: { marginTop: '10px', display: 'flex', gap: '8px' } },
+											// Copy structure button (only for translations, not original)
+											!lang.isOriginal ? el(
+												Button,
+												{
+													variant: 'secondary',
+													onClick: function () {
+														if (confirm(__('This will reorganize your translation to match the original line structure. Continue?', 'gufte'))) {
+															syncStructureFromOriginal(index);
+														}
+													}
+												},
+												'📋 ' + __('Copy Structure from Original', 'gufte')
+											) : null,
+											languages.length > 1 ? el(
+												Button,
+												{
+													variant: 'tertiary',
+													isDestructive: true,
+													onClick: function () {
+														removeLanguage(index);
+													}
+												},
+												__('Remove This Language', 'gufte')
+											) : null
+										)
+									),
+									el(NumberedTextarea, {
+										label: __('Lyrics', 'gufte'),
+										help: __('Enter lyrics line by line. Use special markers: [Verse 1], [Chorus], [Bridge], etc. at the start of a line to create section headers.', 'gufte'),
+										value: lang.lyrics,
+										onChange: function (value) {
+											// Convert tabs to newlines (for table paste)
+											const processedValue = value.replace(/\t/g, '\n');
+											updateLanguage(index, 'lyrics', processedValue);
+										},
+										rows: 20
+									}),
+									el(
+										'div',
+										{ className: 'section-markers-help' },
+										el('strong', {}, __('Section Markers:', 'gufte')),
+										el('br'),
+										el('code', {}, '[Verse 1]'),
+										' ',
+										el('code', {}, '[Verse 2]'),
+										' ',
+										el('code', {}, '[Chorus]'),
+										' ',
+										el('code', {}, '[Bridge]'),
+										' ',
+										el('code', {}, '[Outro]'),
+										el('br'),
+										el('small', {}, __('Add these at the beginning of a line to create section headers', 'gufte'))
+									),
+									el(
+										'div',
+										{ className: 'lyrics-stats' },
+										el('span', { className: 'stat-item' },
+											__('Lines:', 'gufte') + ' ' + (lang.lyrics ? lang.lyrics.split('\n').filter(function (line) {
+												return line.trim();
+											}).length : 0)
+										),
+										el('span', { className: 'stat-separator' }, ' • '),
+										el('span', { className: 'stat-item' },
+											__('Words:', 'gufte') + ' ' + (lang.lyrics ? lang.lyrics.split(/\s+/).filter(function (word) {
+												return word.trim();
+											}).length : 0)
+										)
+									),
+									// SEO Preview Box (after stats)
+									el('div', {
+										style: {
+											marginTop: '16px',
+											padding: '16px',
+											background: '#f0f7ff',
+											border: '1px solid #667eea',
+											borderRadius: '8px'
+										}
+									},
+										el('div', {
+											style: {
+												fontSize: '12px',
+												fontWeight: '600',
+												color: '#667eea',
+												marginBottom: '12px',
+												textTransform: 'uppercase',
+												letterSpacing: '0.5px'
+											}
+										}, '🔍 SEO Preview'),
+										el('div', {
+											style: {
+												marginBottom: '8px'
+											}
+										},
+											el('div', {
+												style: {
+													fontSize: '11px',
+													color: '#666',
+													marginBottom: '4px',
+													fontWeight: '500'
+												}
+											}, 'Title Tag:'),
+											el('div', {
+												style: {
+													fontSize: '18px',
+													color: '#1a0dab',
+													fontWeight: '400',
+													lineHeight: '1.3'
+												}
+											}, seoPreview.title)
+										),
+										el('div', {},
+											el('div', {
+												style: {
+													fontSize: '11px',
+													color: '#666',
+													marginBottom: '4px',
+													fontWeight: '500'
+												}
+											}, 'Meta Description:'),
+											el('div', {
+												style: {
+													fontSize: '13px',
+													color: '#545454',
+													lineHeight: '1.4'
+												}
+											}, seoPreview.description)
+										)
+									)
+								);
+							}
+						)
+					)
+				)
+			);
+		},
+
+		save: function () {
+			// Return null to use PHP render callback (dynamic block)
+			return null;
+		}
+	});
+
+})(window.wp);
